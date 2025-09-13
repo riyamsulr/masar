@@ -1,0 +1,96 @@
+/* ========= Reset & Base ========= */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f6f7fb;
+  color:#1f2937;
+  font-size:16px;
+  line-height:1.6;
+}
+a{color:#3b82f6;text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+.container{max-width:1000px;margin:auto;padding:20px}
+
+/* ========= Topbar (مشترك) ========= */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;margin-bottom:20px;
+  background:#fff;border:1px solid #e5e7eb;border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+.topbar h1{margin:0;font-size:22px}
+.muted{color:#6b7280}
+
+/* ========= Card (مشترك) ========= */
+.card{
+  background:#fff;border:1px solid #e5e7eb;border-radius:12px;
+  padding:16px;box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* ========= Buttons (مشترك) ========= */
+.btn{
+  display:inline-block;padding:8px 14px;
+  border:1px solid #ddd;border-radius:8px;background:#fff;
+  cursor:pointer;font-size:14px;
+}
+.btn.primary{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.btn.primary:hover{background:#2563eb}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn.danger{background:#fff1f2;border-color:#fca5a5;color:#b91c1c}
+
+/* ========= Tables (مشترك) ========= */
+table{width:100%;border-collapse:collapse}
+thead th{
+  background:#f3f6ff;padding:12px;text-align:left;
+  border-bottom:1px solid #e5e7eb;
+}
+tbody td{
+  padding:12px;border-bottom:1px solid #eee;vertical-align:top;
+}
+tbody tr:last-child td{border-bottom:none}
+
+/* ========= Choices A–D (مشترك نهائي) ========= */
+.choices{
+  margin:8px 0 0 24px;          /* مسافة يسار للماركر */
+  padding:0;
+  list-style:upper-alpha outside;/* A, B, C, D من المتصفح */
+  text-align:left;               /* محاذاة ثابتة */
+}
+.choices li{
+  display:list-item;             /* مهم لظهور الماركر */
+  margin:4px 0;
+  padding-left:4px;              /* مسافة صغيرة بعد الحرف */
+  line-height:1.7;
+}
+.choices li::marker{
+  font-weight:700;               /* الحرف سميك */
+  color:#4b5563;                 /* لون أوضح */
+}
+/* تمييز الصحيح بدون فقدان الماركر */
+.choices li.correct{
+  background:#eaf9ef;
+  border:1px solid #b7e3c2;
+  border-radius:6px;
+  padding:2px 6px;
+}
+
+/* ========= Small Avatar (مشترك) ========= */
+.avatar-img{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid #e5e7eb;
+  display:block;
+}
+
+/* ========= Question Image ========= */
+.q-img{
+  width:180px;
+  height:auto;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  display:block;
+}
