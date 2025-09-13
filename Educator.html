@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Educator Homepage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="common.css">
+
+  <style>
+    .section{margin-top:18px}
+    .educator{
+      display:grid;grid-template-columns:1fr 140px;gap:18px;align-items:start;
+    }
+    .photo{
+      width:140px;height:140px;border-radius:50%;overflow:hidden;border:2px solid #e5e7eb;
+      background:#f8fafc;display:flex;align-items:center;justify-content:center;
+    }
+    .photo img{width:100%;height:100%;object-fit:cover}
+
+    .quiz-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media (max-width:900px){.quiz-list{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:620px){.quiz-list{grid-template-columns:1fr}}
+
+    .quiz-card{ /* كارد للكويز */
+      background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;
+      box-shadow:0 2px 6px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:10px;
+    }
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:4px 8px;font-size:12px;border:1px solid #e5e7eb;border-radius:999px;background:#f8fafc}
+    .feedback-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px dashed #e5e7eb;padding-top:8px}
+    .rating .star{color:#f59e0b}
+    .empty{color:#9ca3af}
+
+    /* جدول التوصيات */
+    .table-card{padding:0}
+    .table-wrap{border-radius:12px;overflow:hidden;border:1px solid #e5e7eb}
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="topbar">
+      <h1>Welcome, <span class="muted">[Educator First Name]</span></h1>
+      <a class="btn" href="index.html">Log-out</a>
+    </div>
+
+    <!-- Educator info -->
+    <section class="section">
+      <div class="card educator">
+        <div>
+          <h2>Educator Information</h2>
+          <div><strong>Name:</strong> John Doe</div>
+          <div><strong>Email:</strong> john@example.com</div>
+          <div><strong>Address:</strong> Riyadh, Saudi Arabia</div>
+          <div><strong>Specialized Topics:</strong> Traffic Signs, Traffic Rules, Road Safety</div>
+        </div>
+        <div class="photo">
+          <img src="pfp1.jpg" alt="Educator Photo">
+        </div>
+      </div>
+    </section>
+
+    <!-- Your Quizzes (عناوين تربط لصفحة الكويز) -->
+    <section class="section">
+      <h2>Your Quizzes</h2>
+      <div class="quiz-list">
+        <article class="quiz-card">
+          <h3 class="quiz-title"><a href="quiz.html">Traffic Signs</a></h3>
+          <div class="chips"><span class="chip">20 Questions</span><span class="chip">15 Takers</span></div>
+          <div>Average Score: 80%</div>
+          <div class="feedback-row">
+            <div class="rating"><span class="star">★</span> <strong>4.5 / 5</strong></div>
+            <a href="comments.html">View Comments</a>
+          </div>
+        </article>
+
+        <article class="quiz-card">
+          <h3 class="quiz-title"><a href="quiz.html">Traffic Rules</a></h3>
+          <div class="chips"><span class="chip">0 Questions</span></div>
+          <div class="empty">quiz not taken yet</div>
+          <div class="feedback-row"><span class="empty">no feedback yet</span></div>
+        </article>
+
+        <article class="quiz-card">
+          <h3 class="quiz-title"><a href="quiz.html">Road Safety</a></h3>
+          <div class="chips"><span class="chip">12 Questions</span><span class="chip">8 Takers</span></div>
+          <div>Average Score: 72%</div>
+          <div class="feedback-row">
+            <div class="rating"><span class="star">★</span> <strong>3.8 / 5</strong></div>
+            <a href="comments.html">View Comments</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Question Recommendations -->
+    <section class="section">
+      <h2>Question Recommendations</h2>
+      <div class="card table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Topic</th><th>Learner</th><th>Question</th><th>Review</th></tr>
+            </thead>
+           <tbody>
+  <!-- Row 1 -->
+  <tr>
+    <td>Traffic Signs</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="pfp3.jpg" class="avatar-img" alt="Alice">
+        <div>Alice Smith</div>
+      </div>
+    </td>
+    <td>
+      <figure>
+        <img class="q-img" src="img/sample-sign.png" alt="Traffic sign">
+        <figcaption>
+          <div><strong>Question:</strong> What does this sign mean?</div>
+          <ol class="choices" type="A">
+            <li>Stop</li>
+            <li class="correct">School Crossing</li>
+            <li>No Entry</li>
+            <li>Speed Limit</li>
+          </ol>
+        </figcaption>
+      </figure>
+    </td>
+    <td>
+      <div class="card" style="padding:12px">
+        <div style="font-weight:600;margin-bottom:6px">Comment</div>
+        <textarea style="width:100%;height:3.5em;resize:none;border:1px solid #dfe3ea;border-radius:8px;padding:8px;">Great question!</textarea>
+        <div style="display:flex;gap:14px;align-items:center;margin-top:8px">
+          <span style="font-weight:600">Approve:</span>
+          <label><input type="radio" name="ap1"> Yes</label>
+          <label><input type="radio" name="ap1"> No</label>
+        </div>
+        <button class="btn primary" style="width:100%;margin-top:8px">Submit</button>
+      </div>
+    </td>
+  </tr>
+
+  <!-- Row 2 -->
+  <tr>
+    <td>Traffic Rules</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="pfp2.jpg" class="avatar-img" alt="Mohammed">
+        <div>Mohammed Ali</div>
+      </div>
+    </td>
+    <td>
+      <div><strong>Question:</strong> When should you use hazard lights?</div>
+      <ol class="choices" type="A">
+        <li>During normal driving</li>
+        <li class="correct">When stopped and causing a temporary obstruction</li>
+        <li>On highways to change lanes</li>
+        <li>To warn the car behind you</li>
+      </ol>
+    </td>
+    <td>
+      <div class="card" style="padding:12px">
+        <div style="font-weight:600;margin-bottom:6px">Comment</div>
+        <textarea style="width:100%;height:3.5em;resize:none;border:1px solid #dfe3ea;border-radius:8px;padding:8px;" placeholder="Write your note..."></textarea>
+        <div style="display:flex;gap:14px;align-items:center;margin-top:8px">
+          <span style="font-weight:600">Approve:</span>
+          <label><input type="radio" name="ap2"> Yes</label>
+          <label><input type="radio" name="ap2"> No</label>
+        </div>
+        <button class="btn primary" style="width:100%;margin-top:8px">Submit</button>
+      </div>
+    </td>
+  </tr>
+</tbody>
+
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
