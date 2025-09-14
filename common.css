@@ -1,0 +1,152 @@
+/* ===== Base ===== */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Arial, "Segoe UI", Tahoma, sans-serif; /* خط نظام للجسم */
+  background:#F5F6F7;                                /* رمادي فاتح موحّد */
+  color:#2B3537;
+  font-size:16px; line-height:1.6;
+}
+h1,h2,h3{font-family:Georgia, "Times New Roman", serif; font-weight:800; letter-spacing:.2px}
+a{color:#2B3537;text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+.container{max-width:1000px;margin:auto;padding:20px}
+.muted{color:#8A8A8B}
+
+/* ===== Section title (شريط يسار) ===== */
+.section{margin-top:18px}
+.section-title{
+  display:flex;align-items:center;gap:12px;
+  margin:0 0 12px;
+  font-weight:800;color:#2B3537;line-height:1.2;
+}
+.section-title .accent{
+  width:10px;height:30px;border-radius:4px;
+  background:#C9E0ED;           /* أزرق فاتح متفق عليه */
+  border:1px solid #A9CFE0;
+}
+
+/* ===== Topbar ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.topbar h1{margin:0}
+
+/* ===== روابط مميزة (Log-out ونظائرها) ===== */
+.hl-link, .logout-link{
+  position:relative; font-weight:800; padding:0 2px; display:inline-block;
+}
+.hl-link::after, .logout-link::after{
+  content:""; position:absolute; left:0; right:0; bottom:.15em; height:.6em;
+  background:#DDE584; z-index:-1; border-radius:10px; /* نفس لون التمييز */
+}
+
+/* ===== Buttons (للاستخدام العام عند الحاجة) ===== */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 14px;border:1px solid #D6CEC2;
+  border-radius:8px;background:#fff;color:#2B3537;
+  cursor:pointer;transition:.2s;text-decoration:none
+}
+.btn:hover{box-shadow:0 2px 6px rgba(0,0,0,.05);transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.primary{background:#0F4B3A;color:#fff;border-color:#0F4B3A}
+.btn.primary:hover{background:#0C3E31;border-color:#0C3E31}
+.btn-full{display:block;width:100%}
+
+/* ===== Cards عامة ===== */
+.card{
+  background:#fff;
+  border:1px solid #D6CEC2;
+  border-radius:12px;                     /* كروت عامة منحنية */
+  padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.05)
+}
+
+/* ===== Tables ===== */
+table{width:100%;border-collapse:separate;border-spacing:0}
+th,td{padding:12px 14px;border-bottom:1px solid #D6CEC2;vertical-align:top}
+
+/* رأس الجدول أخضر فاتح مثل Log-out */
+thead th{background:#DDE584;color:#2B3537;font-weight:800}
+.table-card{padding:0}
+.table-wrap{
+  border-radius:12px;overflow:hidden;
+  border:1px solid #CCD86E;              /* إطار أخضر فاتح */
+}
+.table-wrap tbody tr:last-child td{border-bottom:none}
+
+/* ===== Chips / Badges ===== */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  padding:4px 8px;font-size:12px;border-radius:999px;border:1px solid #D6CEC2;color:#2B3537
+}
+.chips .chip:nth-child(odd){background:#E7DFD1}
+.chips .chip:nth-child(even){background:#C9E0ED;border-color:#A9CFE0}
+
+/* ===== Question media (مشترك للمعلم والكويز) ===== */
+.q-item{display:block}
+.q-item.has-media{
+  display:grid;
+  grid-template-columns:200px 1fr;  /* عرض موحّد للصورة */
+  gap:12px;
+  align-items:stretch;              /* تمديد الصورة بطول المحتوى */
+}
+
+/* نسخة "طويلة" بلا إطار ولا خلفية */
+.q-media.tall{
+  width:200px; height:100%;
+  background:transparent; border:none; border-radius:12px;
+  overflow:hidden; display:flex; align-items:center; justify-content:center;
+}
+.q-media.tall .q-img{
+  width:100%; height:100%;
+  object-fit:contain;               /* تظهر كاملة بدون قص */
+  object-position:center;
+  max-height:100%;
+  border:none; border-radius:12px;  /* بلا إطار */
+  padding:10px;                     /* مسافة داخلية متّسقة */
+}
+
+/* النسخة المربعة (لو احتجتيها لاحقًا) */
+.q-media.sq{
+  width:180px; aspect-ratio:1/1;
+  border:1px solid #D6CEC2; border-radius:12px;
+  background:#F3EFE7;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; font-size:12px; color:#8A8A8B;
+}
+.q-media.sq .q-img{width:100%;height:100%;object-fit:contain;border-radius:12px}
+
+@media (max-width:620px){
+  .q-item.has-media{grid-template-columns:1fr}
+  .q-media.tall{width:100%;max-width:360px;margin:0 auto}
+  .q-media.sq{width:100%;max-width:300px;margin:0 auto}
+}
+
+/* ===== Images عامة ===== */
+.avatar-img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #D6CEC2}
+.q-img{width:180px;height:auto;border:1px solid #D6CEC2;border-radius:10px} /* افتراضي — تُلغى داخل .q-media.tall */
+
+/* ===== Recommendation / Comments ===== */
+.review-card{padding:12px}
+.comment-title{font-weight:600;margin-bottom:6px}
+.comment-input{width:100%;height:3.5em;resize:none;border:1px solid #D9CDC2;border-radius:8px;padding:8px}
+.approval-row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;margin-top:8px}
+.approval-title{font-weight:600;white-space:nowrap}
+.approval-options{display:inline-flex;align-items:center;gap:12px;flex-wrap:nowrap}
+.approval-options label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.approval-options input[type=radio]{margin:0;accent-color:#0F4B3A}
+.rating .star{color:#DDE584}
+
+/* ===== Choices ===== */
+.choices{list-style:none;margin:8px 0 0;padding:0;counter-reset:choice}
+.choices li{
+  list-style:none !important;position:relative;margin:6px 0;
+  padding:.38rem .5rem .38rem 1.9rem;border:1px solid transparent;border-radius:6px;line-height:1.6
+}
+.choices li::marker{content:""}
+.choices li::before{
+  counter-increment:choice;content:counter(choice, upper-alpha) ".";
+  position:absolute;left:0;top:0;width:1.6rem;text-align:center;color:#8A8A8B;font-weight:600;line-height:1.6
+}
+.choices li.correct{background:#E6F2F7;border-color:#A9CFE0}

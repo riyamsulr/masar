@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz — Traffic Signs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .link-group{display:flex;gap:16px;flex-wrap:wrap}
+    .quiz-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+    .meta-box{
+      background:#fff;border:1px solid #D6CEC2;border-radius:12px;
+      padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.05)
+    }
+    .meta-box strong{display:block;font-size:13px;color:#8A8A8B;margin-bottom:4px}
+    .col-num{width:44px}
+    .col-actions{width:180px}
+    .q-title{font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="quiz-header">
+      <h1 class="section-title"><span class="accent"></span> Quiz — Traffic Signs</h1>
+      <div class="link-group">
+        <a href="Educator.html" class="hl-link">Back</a>
+        <a href="add-question.html" class="hl-link">+ Add Question</a>
+      </div>
+    </div>
+
+    <!-- Meta -->
+    <div class="quiz-meta">
+      <div class="meta-box"><strong>Topic</strong><div>Traffic Signs</div></div>
+      <div class="meta-box"><strong>Educator</strong><div>John Doe</div></div>
+      <div class="meta-box"><strong>Total Questions</strong><div>4</div></div>
+    </div>
+
+    <!-- Questions -->
+    <section class="section">
+      <div class="card table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-num">#</th>
+                <th>Question &amp; Choices</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- Q1 -->
+              <tr id="q1">
+                <td>1</td>
+                <td>
+                  <div class="q-item has-media">
+                    <div class="q-media tall">
+                      <img class="q-img" src="img/pedestrian.jpg" alt="Pedestrians warning sign">
+                    </div>
+                    <div class="q-body">
+                      <div class="q-title">What type of hazard does this sign warn about?</div>
+                      <ol class="choices">
+                        <li class="correct">Pedestrians</li>
+                        <li>School children</li>
+                        <li>Road works</li>
+                        <li>Traffic controlled by police</li>
+                      </ol>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="link-group">
+                    <a href="edit-question.html?q=q1" class="hl-link">Edit</a>
+                    <a href="Quiz.html#q1" class="hl-link">Delete</a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Q2 -->
+              <tr id="q2">
+                <td>2</td>
+                <td>
+                  <div class="q-item has-media">
+                    <div class="q-media tall">
+                      <img class="q-img" src="img/divided-highway.jpg" alt="Divided highway begins warning sign">
+                    </div>
+                    <div class="q-body">
+                      <div class="q-title">What does this sign mean?</div>
+                      <ol class="choices">
+                        <li>Two-way traffic</li>
+                        <li>End of divided highway</li>
+                        <li>Road narrows on the right</li>
+                        <li class="correct">Start of divided highway</li>
+                      </ol>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="link-group">
+                    <a href="edit-question.html?q=q2" class="hl-link">Edit</a>
+                    <a href="Quiz.html#q2" class="hl-link">Delete</a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Q3 -->
+              <tr id="q3">
+                <td>3</td>
+                <td>
+                  <div class="q-item has-media">
+                    <div class="q-media tall">
+                      <img class="q-img" src="img/Noentry-sign.jpg" alt="No entry sign">
+                    </div>
+                    <div class="q-body">
+                      <div class="q-title">What does this sign mean?</div>
+                      <ol class="choices">
+                        <li class="correct">No entry</li>
+                        <li>Stop and proceed</li>
+                        <li>One-way street</li>
+                        <li>Roundabout ahead</li>
+                      </ol>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="link-group">
+                    <a href="edit-question.html?q=q3" class="hl-link">Edit</a>
+                    <a href="Quiz.html#q3" class="hl-link">Delete</a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Q4 -->
+              <tr id="q4">
+                <td>4</td>
+                <td>
+                  <div class="q-item has-media">
+                    <div class="q-media tall">
+                      <img class="q-img" src="img/road.jpg" alt="Road works warning sign">
+                    </div>
+                    <div class="q-body">
+                      <div class="q-title">What does this sign mean?</div>
+                      <ol class="choices">
+                        <li>Pedestrian crossing</li>
+                        <li>Loose gravel</li>
+                        <li class="correct">Road works</li>
+                        <li>Flagman ahead</li>
+                      </ol>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="link-group">
+                    <a href="edit-question.html?q=q4" class="hl-link">Edit</a>
+                    <a href="Quiz.html#q4" class="hl-link">Delete</a>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
