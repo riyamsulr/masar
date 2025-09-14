@@ -1,0 +1,130 @@
+/* ============ الأساسيات (RTL أولاً) ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  direction:rtl;                      /* من اليمين لليسار */
+  font-family:Arial,"Segoe UI",Tahoma,sans-serif;
+  background:#F5F6F7;                 /* رمادي فاتح هادئ */
+  color:#2B3537;
+  font-size:16px; line-height:1.6;
+}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:800;letter-spacing:.2px;margin:0}
+a{color:#2B3537;text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+.container{max-width:1000px;margin:auto;padding:20px}
+.muted{color:#8A8A8B}
+
+/* ============ الشريط العلوي ============ */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.topbar h1{margin:0}
+
+/* ============ عناوين الأقسام (شريط ملوّن يمين العنوان) ============ */
+.section{margin-top:18px}
+.section-title{
+  display:flex;align-items:center;gap:12px;
+  margin:0 0 12px; font-weight:800; color:#2B3537; line-height:1.2;
+}
+.section-title .accent{
+  width:10px;height:30px;border-radius:4px;
+  background:#C9E0ED;                 /* أزرق فاتح */
+  border:1px solid #A9CFE0;
+}
+
+/* ============ روابط مميّزة (تسجيل الخروج/رجوع/إضافة) ============ */
+.hl-link,.logout-link{
+  position:relative; font-weight:800; padding:0 2px; display:inline-block
+}
+.hl-link::after,.logout-link::after{
+  content:""; position:absolute; inset:auto 0 .15em 0; height:.6em;
+  background:#DDE584; border-radius:10px; z-index:-1;     /* أصفر فاتح */
+}
+
+/* ============ أزرار عامة (عند الحاجة) ============ */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 14px;border:1px solid #D6CEC2;border-radius:8px;
+  background:#fff;color:#2B3537;cursor:pointer;transition:.2s;text-decoration:none
+}
+.btn:hover{box-shadow:0 2px 6px rgba(0,0,0,.05);transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.primary{background:#0F4B3A;color:#fff;border-color:#0F4B3A}
+.btn.primary:hover{background:#0C3E31;border-color:#0C3E31}
+.btn-full{display:block;width:100%}
+
+/* ============ بطاقات ============ */
+.card{
+  background:#fff;border:1px solid #D6CEC2;border-radius:12px;
+  padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.05)
+}
+
+/* ============ الجداول ============ */
+table{width:100%;border-collapse:separate;border-spacing:0}
+th,td{padding:12px 14px;border-bottom:1px solid #D6CEC2;vertical-align:top;text-align:right}
+thead th{background:#DDE584;color:#2B3537;font-weight:800}           /* رأس أخضر فاتح */
+.table-card{padding:0}
+.table-wrap{border-radius:12px;overflow:hidden;border:1px solid #CCD86E} /* إطار أخضر فاتح */
+.table-wrap tbody tr:last-child td{border-bottom:none}
+/* لا تأثير hover على الصفوف */
+tbody tr:hover{background:transparent}
+
+/* ============ شارات/شرائح ============ */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:4px 8px;font-size:12px;border-radius:999px;border:1px solid #D6CEC2;color:#2B3537}
+.chips .chip:nth-child(odd){background:#E7DFD1}                       /* بيج */
+.chips .chip:nth-child(even){background:#C9E0ED;border-color:#A9CFE0} /* أزرق فاتح */
+
+/* ============ عناصر صفّ أفقي (صورة + اسم) ============ */
+.hstack{display:flex;align-items:center;gap:8px}
+
+/* ============ وسائط السؤال (مشترك للمعلم والكويز) ============ */
+.q-item{display:block}
+.q-item.has-media{
+  display:grid;
+  grid-template-columns:200px 1fr;   /* عمود الصورة ثابت */
+  gap:12px; align-items:stretch;     /* الصورة تمتد بطول المحتوى */
+}
+/* الحاوية الطويلة للصورة — بدون إطار/خلفية */
+.q-media.tall{
+  width:200px;height:100%;
+  background:transparent;border:none;border-radius:12px;
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+/* الصورة نفسها — تظهر كاملة وموحّدة على الكل */
+.q-media.tall .q-img{
+  width:100%;height:100%;
+  object-fit:contain; object-position:center;   /* بدون قص */
+  max-height:100%; padding:10px;
+  border:none;border-radius:12px;               /* بلا إطار */
+}
+
+/* ============ صور عامة ============ */
+.avatar-img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #D6CEC2}
+/* افتراضي للصورة العامة بدون أي إطار — داخل q-media.tall يُطبّق الشكل الخاص */
+.q-img{display:block;max-width:100%;height:auto;border:0}
+
+/* ============ التوصيات/التعليقات ============ */
+.review-card{padding:12px}
+.comment-title{font-weight:600;margin-bottom:6px}
+.comment-input{width:100%;height:3.5em;resize:none;border:1px solid #D9CDC2;border-radius:8px;padding:8px}
+.approval-row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;margin-top:8px}
+.approval-title{font-weight:600;white-space:nowrap}
+.approval-options{display:inline-flex;align-items:center;gap:12px;flex-wrap:nowrap}
+.approval-options label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.approval-options input[type=radio]{margin:0;accent-color:#0F4B3A}
+.rating .star{color:#DDE584}
+
+/* ============ خيارات الأسئلة (A/B/C/D) ============ */
+.choices{list-style:none;margin:8px 0 0;padding:0;counter-reset:choice}
+.choices li{
+  position:relative;margin:6px 0;
+  padding:.38rem 1.9rem .38rem .5rem;  /* مساحة الرقم من اليمين */
+  border:1px solid transparent;border-radius:6px;line-height:1.6
+}
+.choices li::marker{content:""}
+.choices li::before{
+  counter-increment:choice;content:counter(choice, upper-alpha) ".";
+  position:absolute;right:0;top:0;width:1.6rem;text-align:center;color:#8A8A8B;font-weight:600;line-height:1.6
+}
+.choices li.correct{background:#E6F2F7;border-color:#A9CFE0}
