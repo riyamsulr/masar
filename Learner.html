@@ -120,6 +120,33 @@
         .start-quiz-button:hover {
             background-color: #2563eb;
         }
+
+        .quiz-section {
+            display: flex;
+            justify-content: space-between;
+        }
+        .rec-section {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .filter-select {
+            padding: 6px 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #D6CEC2;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #2B3537;
+        }
+
+        .recommend-a-question:hover {
+            text-decoration: underline;
+        }
+
+        .recommend-a-question {
+            font-weight: bold;
+        }
+
     </style>
 </head>
 
@@ -150,7 +177,15 @@
 
         <!-- اختباراتك -->
         <section class="section">
-            <h2 class="section-title"><span class="accent"></span> الاختبارات</h2>
+            <div class="quiz-section">
+                <h2 class="section-title"><span class="accent"></span> الاختبارات</h2>
+                <select class="filter-select">
+                    <option value="all">جميع المواضيع</option>
+                    <option value="traffic-signs">إشارات المرور</option>
+                    <option value="traffic-rules">قواعد المرور</option>
+                    <option value="road-safety">السلامة المرورية</option>
+                </select>
+            </div>
             <div class="quiz-list">
                 <article class="quiz-card">
                     <div class="quiz-info">
@@ -161,7 +196,7 @@
                         <h4>أ. جون</h4>
                         <img src="default-profile.png">
                     </div>
-                    <button class="btn primary btn-full">بدء الاختبار</button>
+                    <a href="TakeQuiz.html"><button class="btn primary btn-full" >بدء الاختبار</button></a>
                 </article>
 
                 <article class="quiz-card">
@@ -173,10 +208,10 @@
                         <h4>أ. جون</h4>
                         <img src="default-profile.png">
                     </div>
-                    <button class="btn primary btn-full">بدء الاختبار</button>
+                    <a href="TakeQuiz.html"><button class="btn primary btn-full" >بدء الاختبار</button></a>
                 </article>
 
-                 <article class="quiz-card">
+                <article class="quiz-card">
                     <div class="quiz-info">
                         <h3 class="quiz-title"><a href="">السلامة المرورية</a></h3>
                         <div class="chips"><span class="chip"><span class="number-of-questions">0</span> سؤال</div>
@@ -185,7 +220,7 @@
                         <h4>أ. جون</h4>
                         <img src="default-profile.png">
                     </div>
-                    <button class="btn primary btn-full">بدء الاختبار</button>
+                    <a href="TakeQuiz.html"><button class="btn primary btn-full" >بدء الاختبار</button></a>
                 </article>
 
             </div>
@@ -193,7 +228,10 @@
 
         <!-- توصيات الأسئلة -->
         <section class="section">
-            <h2 class="section-title"><span class="accent"></span> توصيات الأسئلة</h2>
+            <div class="rec-section">
+                <h2 class="section-title"><span class="accent"></span> توصيات الأسئلة</h2>
+                <a href="" class="recommend-a-question">إضافة سؤال</a>
+            </div>
             <div class="card table-card">
                 <div class="table-wrap">
                     <table>
@@ -280,6 +318,31 @@
         </section>
 
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const quizCards = document.querySelectorAll('.quiz-card');
+
+
+            quizCards.forEach(card => {
+
+                const questionCountElement = card.querySelector('.number-of-questions');
+                const startQuizButton = card.querySelector('.btn.primary.btn-full');
+
+
+                if (questionCountElement && startQuizButton) {
+ 
+                    const numberOfQuestions = parseInt(questionCountElement.textContent, 10);
+
+
+                    if (numberOfQuestions === 0) {
+                        startQuizButton.disabled = true;
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
