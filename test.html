@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نتيجة الاختبار</title>
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body { font-family: sans-serif; background: #f7f7f7; margin: 0; }
+
+    /* 🟡 هيدر */
+    header {
+      background: #DDE584; /* نفس لون الشريط */
+      padding: 14px 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2B3537;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain; /* بدون أي إطار أو قص دائري */
+      border: none;
+    }
+
+    header .back-home {
+      font-weight: 700;
+      color: #2B3537;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    header .back-home:hover {
+      text-decoration: underline;
+    }
+
+    /* 🟦 عناوين */
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 16px 0 10px;
+      color: #0F4B3A;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title .accent {
+      display: inline-block;
+      width: 6px;
+      height: 24px;
+      background: #A5D4E7;
+      border-radius: 3px;
+    }
+
+    /* 🟡 بطاقة المعلم */
+    .educator-card {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid #D6CEC2;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    }
+
+    .educator-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2B3537;
+    }
+
+    .educator-name strong {
+      color: #0F4B3A;
+      margin-left: 4px;
+    }
+
+    .educator-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #E7DFD1;
+      flex-shrink: 0;
+    }
+
+    .educator-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 🎥 كارد النتيجة */
+    .score-box { text-align: center; margin-bottom: 20px }
+    video {
+      width: 100%;
+      max-width: 500px;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #000;
+      margin-top: 10px;
+    }
+
+    /* 📝 كارد الرأي */
+    .form-card {
+      background: #fff;
+      border: 1px solid #D6CEC2;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .form-header {
+      background: #DDE584;
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 18px;
+      color: #2B3537;
+      border-bottom: 1px solid #CCD86E;
+    }
+
+    form { display: grid; gap: 14px; padding: 20px; }
+    select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #D6CEC2;
+      border-radius: 8px;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: none;
+      box-sizing: border-box;
+    }
+
+    label { font-size: 20px; font-weight: 600 }
+
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      font-size: 40px;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .star-rating span { color: #ccc; transition: color 0.2s }
+    .star-rating span.filled { color: gold }
+
+    /* 🟡 فوتر بالنص */
+    footer {
+      background: #DDE584;
+      padding: 12px 20px;
+      margin-top: 30px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+      text-align: center;
+      font-weight: 600;
+      color: #2B3537;
+    }
+
+    footer a {
+      color: #2B3537;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🟡 الهيدر -->
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <img src="logo.png" alt="شعار الموقع">
+        <span>مسار لتدريب القيادة</span>
+      </div>
+      <a href="Learner.html" class="back-home">العودة إلى الصفحة الرئيسية</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- عنوان المعلم -->
+    <h1 class="section-title"><span class="accent"></span> المعلّم</h1>
+
+    <!-- بطاقة المعلم -->
+    <div class="educator-card">
+      <div class="educator-photo">
+        <img src="pfp1.jpg" alt="صورة المعلّم">
+      </div>
+      <div class="educator-name"> جون دو</div>
+    </div>
+
+    <!-- عنوان النتيجة -->
+    <h1 class="section-title"><span class="accent"></span> نتيجة الاختبار</h1>
+
+    <!-- كارد النتيجة -->
+    <div class="card score-box">
+      <h2>درجتك: ٤ / ٥</h2>
+      <video autoplay muted controls>
+        <source src="videos/congrats.mp4" type="video/mp4">
+        متصفحك لا يدعم تشغيل الفيديو.
+      </video>
+    </div>
+
+    <!-- كارد الرأي -->
+    <div class="form-card">
+      <div class="form-header">أعطِ رأيك</div>
+      <form action="Learner.html" method="post">
+        <label>التقييم</label>
+        <div class="star-rating">
+          <span data-value="5">&#9734;</span>
+          <span data-value="4">&#9734;</span>
+          <span data-value="3">&#9734;</span>
+          <span data-value="2">&#9734;</span>
+          <span data-value="1">&#9734;</span>
+        </div>
+        <input type="hidden" name="rating" id="rating-value">
+
+        <label>ملاحظاتك</label>
+        <textarea rows="3" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+
+        <button class="btn primary btn-full">إرسال</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🟡 الفوتر -->
+  <footer>
+    &copy; 2025 جميع الحقوق محفوظة | <a href="Learner.html">الصفحة الرئيسية</a>
+  </footer>
+
+  <script>
+    const stars = document.querySelectorAll('.star-rating span');
+    const ratingInput = document.getElementById('rating-value');
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const value = star.getAttribute('data-value');
+        ratingInput.value = value;
+
+        stars.forEach(s => {
+          if (parseInt(s.getAttribute('data-value')) <= value) {
+            s.innerHTML = '&#9733;';
+            s.classList.add('filled');
+          } else {
+            s.innerHTML = '&#9734;';
+            s.classList.remove('filled');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
