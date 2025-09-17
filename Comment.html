@@ -1,11 +1,17 @@
 <!DOCTYPE html>
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>التعليقات</title>
     <link rel="stylesheet" href="common.css">
     <style>
-        .quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px
+        }
 
         .comment-item {
             background: rgba(221, 229, 132, 0.3);
@@ -21,7 +27,8 @@
             font-size: 0.8rem;
             color: #8A8A8B;
             margin-top: 0.5rem;
-            text-align: left; /* Aligned left for timestamps */
+            text-align: left;
+            /* Aligned left for timestamps */
         }
     </style>
 </head>
@@ -37,26 +44,43 @@
             </div>
         </div>
 
-    <!-- Comments Section -->
+        <!-- Comments Section -->
         <section class="section">
             <div class="card">
                 <h2 class="section-title"><span class="accent"></span> جميع التعليقات</h2>
-                
+
                 <!-- Comment 1  -->
                 <div class="comment-item">
                     <p class="comment-text">اختبار مفيد جدا</p>
                     <p class="comment-date">9/15/2025, 1:20:00 PM</p>
                 </div>
-                
+
                 <!-- Comment 2 -->
                 <div class="comment-item">
                     <p class="comment-text">بعض الأسئلة كانت صعبة قليلاً، لكنها كانت مراجعة رائعة</p>
-                    <p class="comment-date">9/15/2025, 12:20:00 PM</p>
+                    <p class="comment-date">5/15/2025, 12:20:00 PM</p>
                 </div>
-                
-                
+
+
             </div>
         </section>
 
     </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const container = document.querySelector(".card");
+        const comments = Array.from(container.querySelectorAll(".comment-item"));
+
+        comments.sort((a, b) => {
+            const dateA = new Date(a.querySelector(".comment-date").textContent.trim());
+            const dateB = new Date(b.querySelector(".comment-date").textContent.trim());
+            return dateB - dateA; 
+        });
+
+        const referenceNode = container.querySelector(".section-title").nextElementSibling;
+        comments.forEach(comment => {
+            container.insertBefore(comment, referenceNode);
+        });
+    });
+</script>
 </body>
