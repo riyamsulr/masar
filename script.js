@@ -24,7 +24,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Function to handle form submission and redirection
+  // Function to handle login form submission and redirection
+  window.handleLoginSubmit = function(event) {
+    event.preventDefault();
+    const userType = document.getElementById("user-type").value;
+    let redirectUrl = "";
+    if (userType === "Learner") {
+      redirectUrl = "Learner.html";
+    } else if (userType === "Educator") {
+      redirectUrl = "Educator.html";
+    }
+    if (redirectUrl) {
+      // Here you can add validation or form data processing if needed
+      window.location.href = redirectUrl;
+    }
+  };
+
+  // Function to handle signup form submission and redirection
   window.handleSubmit = function(event, redirectUrl) {
     event.preventDefault();
     // Here you can add validation or form data processing if needed
