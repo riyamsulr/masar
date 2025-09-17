@@ -61,26 +61,38 @@
                     <p class="comment-date">5/15/2025, 12:20:00 PM</p>
                 </div>
 
+                <!-- Comment 3 -->
+                <div class="comment-item">
+                    <p class="comment-text"> مراجعة رائعة</p>
+                    <p class="comment-date">11/15/2025, 12:20:00 PM</p>
+                </div>
+
 
             </div>
         </section>
 
     </div>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const container = document.querySelector(".card");
-        const comments = Array.from(container.querySelectorAll(".comment-item"));
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.querySelector(".card");
+            const comments = Array.from(container.querySelectorAll(".comment-item"));
 
-        comments.sort((a, b) => {
-            const dateA = new Date(a.querySelector(".comment-date").textContent.trim());
-            const dateB = new Date(b.querySelector(".comment-date").textContent.trim());
-            return dateB - dateA; 
-        });
+            comments.sort((a, b) => {
+                const dateA = new Date(a.querySelector(".comment-date").textContent.trim());
+                const dateB = new Date(b.querySelector(".comment-date").textContent.trim());
+                return dateB - dateA;
+            });
 
-        const referenceNode = container.querySelector(".section-title").nextElementSibling;
-        comments.forEach(comment => {
-            container.insertBefore(comment, referenceNode);
+            const fragment = document.createDocumentFragment();
+            comments.forEach(comment => {
+                fragment.appendChild(comment);
+            });
+
+            const referenceNode = container.querySelector(".section-title").nextElementSibling;
+
+            container.insertBefore(fragment, referenceNode);
         });
-    });
-</script>
+    </script>
+
+
 </body>
