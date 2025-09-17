@@ -13,19 +13,22 @@
     <img src="logo.png" alt="مسار" id="logo" class="rd">
   </header>
   <div class="auth-container rd">
-    <form class="rd" id="login-form" onsubmit="handleLoginSubmit(event)">
-      <label class="rd">البريد الإلكتروني</label>
-      <input type="email" required class="rd">
-      <label class="rd">كلمة المرور</label>
-      <input type="password" required class="rd">
-      <label class="rd">نوع المستخدم</label>
-      <select class="rd" id="user-type" required>
-        <option value="" disabled selected>اختر النوع</option>
-        <option value="Learner">طالب</option>
-        <option value="Educator">معلم</option>
-      </select>
-      <input type="submit" value="سجل الدخول" class="submit rd">
-    </form>
+   <form class="rd" id="login-form" onsubmit="handleLoginSubmit(event)">
+  <label class="rd">البريد الإلكتروني</label>
+  <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني">
+
+  <label class="rd">كلمة المرور</label>
+  <input type="password" required class="rd" placeholder="ادخل كلمة المرور">
+
+  <label class="rd">نوع المستخدم</label>
+  <select class="rd" id="user-type" required>
+    <option value="" disabled selected>اختر النوع</option>
+    <option value="Learner">طالب</option>
+    <option value="Educator">معلم</option>
+  </select>
+
+  <input type="submit" value="سجل الدخول" class="submit rd">
+</form>
   </div>
 </body>
 </html>
