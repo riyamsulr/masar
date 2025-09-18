@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نتيجة الاختبار</title>
+<link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body { font-family: sans-serif; background: #f7f7f7; }
+  
+    header .back-home {
+      font-weight: 700;
+      color: #2B3537;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    header .back-home:hover {
+      text-decoration: underline;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      color: #0F4B3A; }
+
+    .educator-card {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid #D6CEC2;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .educator-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2B3537;
+    }
+    .educator-name strong {
+      color: #0F4B3A;
+      margin-left: 4px;
+    }
+    .educator-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #D6CEC2;
+      background: #E7DFD1;
+      flex-shrink: 0;
+    }
+    .educator-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .score-box { text-align: center; margin-bottom: 20px }
+    video {
+      width: 100%;
+      max-width: 500px;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #000;
+      margin-top: 10px;
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1px solid #D6CEC2;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .form-header {
+      background: #DDE584;
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 18px;
+      color: #2B3537;
+      border-bottom: 1px solid #CCD86E;
+    }
+    form { display: grid; gap: 14px; padding: 20px; }
+    select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #D6CEC2;
+      border-radius: 8px;
+    }
+    textarea {
+      min-height: 80px;
+      resize: none;
+      box-sizing: border-box;
+    }
+    label { font-size: 20px; font-weight: 600 }
+
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      font-size: 40px;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .star-rating span { color: #ccc; transition: color 0.2s }
+    .star-rating span.filled { color: gold }
+
+    .back-link {
+      position: relative;
+      display: inline-block;
+      font-weight: 800;
+      font-size: 18px;
+      color: #2B3537;
+      text-decoration: none;
+      padding: 0 3px;
+      z-index: 1;
+    }
+    .back-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.15em;
+      height: 0.6em;
+      background: #DDE584;
+      border-radius: 8px;
+      z-index: -1;
+    }
+    .back-link:hover {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+      transition: 0.2s ease;
+    }
+   .meta-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px; 
+   }
+   
+.meta-box img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #D6CEC2; 
+}
+.meta-box strong {
+  display: block;
+  font-size: 16px;
+  color: #0F4B3A;
+}
+.meta-box div div {
+  color: #555;
+  font-size: 14px;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+   <header>
+    <div class="header-container">
+      <div class="logo">
+        <img src="images/logo.png" alt="شعار الموقع">
+        <span>مسار لتدريب القيادة</span>
+      </div>
+      <a href="Learner.html" class="back-home">العودة إلى الصفحة الرئيسية</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="page-header">
+                 
+      
+    <h1 class="section-title"><span class="accent"></span> الاختبار — الإشارات التحذيرية</h1>
+
+</div>
+
+<!--  كارد المعلّم  -->
+<div class="form-card" style="margin-bottom: 20px;">
+  <div class="meta-box">
+    <img src="images/pfp1.jpg" alt="صورة المعلّم">
+    <div>
+      <strong>المعلّم</strong>
+      <div>جون دو</div>
+    </div>
+  </div>
+</div>
+
+
+
+<h1 class="section-title"><span class="accent"></span> نتيجة الاختبار</h1>
+
+
+    <!-- النتيجة -->
+    <div class="card score-box">
+      <h2>درجتك: ٤ / ٥</h2>
+      <video autoplay muted controls>
+        <source src="videos/congrats.mp4" type="video/mp4">
+        متصفحك لا يدعم تشغيل الفيديو.
+      </video>
+    </div>
+
+    <!--  الرأي -->
+    <div class="form-card">
+      <div class="form-header">أعطِ رأيك</div>
+      <form action="Learner.html" method="post">
+        <label>التقييم</label>
+        <div class="star-rating">
+          <span data-value="5">&#9734;</span>
+          <span data-value="4">&#9734;</span>
+          <span data-value="3">&#9734;</span>
+          <span data-value="2">&#9734;</span>
+          <span data-value="1">&#9734;</span>
+        </div>
+        <input type="hidden" name="rating" id="rating-value">
+      
+        <label>ملاحظاتك</label>
+        <textarea rows="3" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+      
+        <button class="btn primary btn-full">إرسال</button>
+      </form>
+    </div>
+  </div>
+<footer>
+    &copy; 2025 جميع الحقوق محفوظة 
+  </footer>
+ 
+  <script>
+    const stars = document.querySelectorAll('.star-rating span');
+    const ratingInput = document.getElementById('rating-value');
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const value = star.getAttribute('data-value');
+        ratingInput.value = value;
+
+        stars.forEach(s => {
+          if (parseInt(s.getAttribute('data-value')) <= value) {
+            s.innerHTML = '&#9733;';
+            s.classList.add('filled');
+          } else {
+            s.innerHTML = '&#9734;';
+            s.classList.remove('filled');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
