@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+    <link rel="icon" href="images/logo.png">
   <title>واجهة المعلّم</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="common.css">
@@ -39,12 +40,21 @@
   </style>
 </head>
 <body>
-  <div class="container">
+    
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <img src="images/logo.png" alt="شعار الموقع">
+        <span>مسار لتدريب القيادة</span>
+      </div>
+    </div>
+  </header>
 
+  <div class="container">
     <!-- Topbar -->
     <div class="topbar">
       <h1>مرحبًا، <span class="muted">جون</span></h1>
-      <a class="logout-link" href="Home.html">تسجيل الخروج</a>
+      <a class="logout-link" href="homepage.html">تسجيل الخروج</a>
     </div>
 
     <!-- معلومات المعلّم -->
@@ -58,7 +68,7 @@
           <div><strong>التخصّصات:</strong> إشارات المرور، قواعد المرور، السلامة المرورية</div>
         </div>
         <div class="photo">
-          <img src="pfp1.jpg" alt="صورة المعلّم">
+          <img src="images/pfp1.jpg" alt="صورة المعلّم">
         </div>
       </div>
     </section>
@@ -73,7 +83,7 @@
           <div>متوسط الدرجة: 80%</div>
           <div class="feedback-row">
             <div class="rating"><span class="star">★</span> <strong>4.5 / 5</strong></div>
-            <a href="comments.html">عرض التعليقات</a>
+            <a href="Comment.html">عرض التعليقات</a>
           </div>
         </article>
 
@@ -90,7 +100,7 @@
           <div>متوسط الدرجة: 72%</div>
           <div class="feedback-row">
             <div class="rating"><span class="star">★</span> <strong>3.8 / 5</strong></div>
-            <a href="comments.html">عرض التعليقات</a>
+            <a href="Comment.html">عرض التعليقات</a>
           </div>
         </article>
       </div>
@@ -111,14 +121,14 @@
                 <td>إشارات المرور</td>
                 <td>
                   <div class="hstack">
-                    <img src="pfp3.jpg" class="avatar-img" alt="أليس">
+                    <img src="images/pfp3.jpg" class="avatar-img" alt="أليس">
                     <div>أليس سميث</div>
                   </div>
                 </td>
                 <td>
                   <div class="q-item has-media">
                     <div class="q-media tall">
-                      <img class="q-img" src="img/Yield.jpg" alt="إشارة إعطاء أولوية">
+                      <img class="q-img" src="images/Yield.jpg" alt="إشارة إعطاء أولوية">
                     </div>
                     <div class="q-body">
                       <div><strong>السؤال:</strong> ما معنى هذه الإشارة؟</div>
@@ -152,7 +162,7 @@
                 <td>إشارات المرور</td>
                 <td>
                   <div class="hstack">
-                    <img src="pfp2.jpg" class="avatar-img" alt="محمد">
+                    <img src="images/pfp2.jpg" class="avatar-img" alt="محمد">
                     <div>محمد علي</div>
                   </div>
                 </td>
@@ -188,5 +198,9 @@
     </section>
 
   </div>
+    <footer>
+    &copy; 2025 جميع الحقوق محفوظة 
+  </footer>
+
 </body>
 </html>
