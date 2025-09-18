@@ -60,18 +60,70 @@
             display: flex;
             justify-content: center;
         }
+
+        /* 🟡 هيدر */
+    header {
+      background: #DDE584; /* نفس لون الشريط */
+      padding: 14px 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2B3537;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain; /* بدون أي إطار أو قص دائري */
+      border: none;
+    }
+
+    header .back-home {
+      font-weight: 700;
+      color: #2B3537;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    header .back-home:hover {
+      text-decoration: underline;
+    }
     </style>
 </head>
 
 <body>
+
+    <!-- 🟡 الهيدر -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="logo.png" alt="شعار الموقع">
+                <span>مسار لتدريب القيادة</span>
+            </div>
+            <a href="Learner.html" class="back-home">العودة إلى الصفحة الرئيسية</a>
+        </div>
+    </header>
+
     <div class="container">
 
         <!-- Header -->
         <div class="quiz-header">
             <h1 class="section-title"><span class="accent"></span> الاختبار — إشارات المرور</h1>
-            <div class="link-group">
-                <a href="Learner.html" class="hl-link">رجوع</a>
-            </div>
         </div>
 
         <!-- Meta -->
@@ -107,15 +159,20 @@
                                     <td>
                                         <div class="q-item has-media">
                                             <div class="q-media tall">
-                                                <img class="q-img" src="images/warning-signs/sharp-right.png" alt="منعطف حاد لليمين">
+                                                <img class="q-img" src="images/warning-signs/sharp-right.png"
+                                                    alt="منعطف حاد لليمين">
                                             </div>
                                             <div class="q-body">
                                                 <div class="q-title">ماذا تعني هذه الإشارة؟</div>
                                                 <ol class="choices">
-                                                    <li><input type="radio" name="q1-answer" value="correct">منعطف حاد لليمين</li>
-                                                    <li><input type="radio" name="q1-answer" value="incorrect">منعطف حاد لليسار</li>
-                                                    <li><input type="radio" name="q1-answer" value="incorrect">منعطف لليمين</li>
-                                                    <li><input type="radio" name="q1-answer" value="incorrect">منعطف لليسار</li>
+                                                    <li><input type="radio" name="q1-answer" value="correct">منعطف حاد
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q1-answer" value="incorrect">منعطف حاد
+                                                        لليسار</li>
+                                                    <li><input type="radio" name="q1-answer" value="incorrect">منعطف
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q1-answer" value="incorrect">منعطف
+                                                        لليسار</li>
                                                 </ol>
                                             </div>
                                         </div>
@@ -128,16 +185,20 @@
                                     <td>
                                         <div class="q-item has-media">
                                             <div class="q-media tall">
-                                                <img class="q-img" src="images/warning-signs/sharp-left.png" alt="منعطف حاد لليسار"
-                                                    loading="lazy" decoding="async">
+                                                <img class="q-img" src="images/warning-signs/sharp-left.png"
+                                                    alt="منعطف حاد لليسار" loading="lazy" decoding="async">
                                             </div>
                                             <div class="q-body">
                                                 <div class="q-title">ماذا تعني هذه الإشارة؟</div>
                                                 <ol class="choices">
-                                                    <li><input type="radio" name="q2-answer" value="incorrect">منعطف حاد لليمين</li>
-                                                    <li><input type="radio" name="q2-answer" value="correct">منعطف حاد لليسار</li>
-                                                    <li><input type="radio" name="q2-answer" value="incorrect">منعطف لليمين</li>
-                                                    <li><input type="radio" name="q2-answer" value="incorrect">منعطف لليسار</li>
+                                                    <li><input type="radio" name="q2-answer" value="incorrect">منعطف حاد
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q2-answer" value="correct">منعطف حاد
+                                                        لليسار</li>
+                                                    <li><input type="radio" name="q2-answer" value="incorrect">منعطف
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q2-answer" value="incorrect">منعطف
+                                                        لليسار</li>
                                                 </ol>
                                             </div>
                                         </div>
@@ -150,16 +211,20 @@
                                     <td>
                                         <div class="q-item has-media">
                                             <div class="q-media tall">
-                                                <img class="q-img" src="images/warning-signs/right.png" alt="منعطف لليمين"
-                                                    loading="lazy" decoding="async">
+                                                <img class="q-img" src="images/warning-signs/right.png"
+                                                    alt="منعطف لليمين" loading="lazy" decoding="async">
                                             </div>
                                             <div class="q-body">
                                                 <div class="q-title">ماذا تعني هذه الإشارة؟</div>
                                                 <ol class="choices">
-                                                    <li><input type="radio" name="q3-answer" value="incorrect">منعطف حاد لليمين</li>
-                                                    <li><input type="radio" name="q3-answer" value="incorrect">منعطف حاد لليسار</li>
-                                                    <li><input type="radio" name="q3-answer" value="correct">منعطف لليمين</li>
-                                                    <li><input type="radio" name="q3-answer" value="incorrect">منعطف لليسار</li>
+                                                    <li><input type="radio" name="q3-answer" value="incorrect">منعطف حاد
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q3-answer" value="incorrect">منعطف حاد
+                                                        لليسار</li>
+                                                    <li><input type="radio" name="q3-answer" value="correct">منعطف
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q3-answer" value="incorrect">منعطف
+                                                        لليسار</li>
                                                 </ol>
                                             </div>
                                         </div>
@@ -172,16 +237,20 @@
                                     <td>
                                         <div class="q-item has-media">
                                             <div class="q-media tall">
-                                                <img class="q-img" src="images/warning-signs/left.png" alt="منعطف لليسار"
-                                                    loading="lazy" decoding="async">
+                                                <img class="q-img" src="images/warning-signs/left.png"
+                                                    alt="منعطف لليسار" loading="lazy" decoding="async">
                                             </div>
                                             <div class="q-body">
                                                 <div class="q-title">ماذا تعني هذه الإشارة؟</div>
                                                 <ol class="choices">
-                                                    <li><input type="radio" name="q4-answer" value="incorrect">منعطف حاد لليمين</li>
-                                                    <li><input type="radio" name="q4-answer" value="incorrect">منعطف حاد لليسار</li>
-                                                    <li><input type="radio" name="q4-answer" value="incorrect">منعطف لليمين</li>
-                                                    <li><input type="radio" name="q4-answer" value="correct">منعطف لليسار</li>
+                                                    <li><input type="radio" name="q4-answer" value="incorrect">منعطف حاد
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q4-answer" value="incorrect">منعطف حاد
+                                                        لليسار</li>
+                                                    <li><input type="radio" name="q4-answer" value="incorrect">منعطف
+                                                        لليمين</li>
+                                                    <li><input type="radio" name="q4-answer" value="correct">منعطف
+                                                        لليسار</li>
                                                 </ol>
                                             </div>
                                         </div>
@@ -194,13 +263,14 @@
                                     <td>
                                         <div class="q-item has-media">
                                             <div class="q-media tall">
-                                                <img class="q-img" src="images/warning-signs/converge-left.png" alt="اندماج من ناحية اليسار"
-                                                    loading="lazy" decoding="async">
+                                                <img class="q-img" src="images/warning-signs/converge-left.png"
+                                                    alt="اندماج من ناحية اليسار" loading="lazy" decoding="async">
                                             </div>
                                             <div class="q-body">
                                                 <div class="q-title">ماذا تعني هذه الإشارة؟</div>
                                                 <ol class="choices">
-                                                    <li><input type="radio" name="q5-answer" value="correct">اندماج من ناحية اليسار</li>
+                                                    <li><input type="radio" name="q5-answer" value="correct">اندماج من
+                                                        ناحية اليسار</li>
                                                     <li><input type="radio" name="q5-answer" value="incorrect">طلاب
                                                         مدرسة</li>
                                                     <li><input type="radio" name="q5-answer" value="incorrect">أعمال
