@@ -235,16 +235,33 @@ $fullName = $firstName . " " . $lastName;
                 <div class="quiz-list">
 
                     <?php
-                    $quizList = "SELECT q.id, q.educatorID, q.topicID, t.topicName, u.firstName, u.lastName
-                                    FROM quiz q JOIN topic t ON q.topicID = t.ID
-                                    JOIN user u ON q.educatorID = u.ID;";
+                    $quizList = "
+                            SELECT 
+                                q.id, 
+                                q.educatorID, 
+                                q.topicID, 
+                                t.topicName, 
+                                u.firstName, 
+                                u.lastName,
+                                COUNT(qq.id) AS questionCount
+                            FROM quiz q
+                            JOIN topic t 
+                                ON q.topicID = t.id
+                            JOIN user u 
+                                ON q.educatorID = u.id
+                            LEFT JOIN quizquestion qq
+                                ON q.id = qq.quizID
+                            GROUP BY 
+                                q.id, q.educatorID, q.topicID, t.topicName, u.firstName, u.lastName;
+                        ";
+
 
                     if ($result = mysqli_query($connection, $quizList)) {
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo "<article class=\"quiz-card\">";
                             echo "<div class=\"quiz-info\">";
                             echo "<h3 class=\"quiz-title\"><a href=\"\">{$row['topicName']}</a></h3>";
-                            echo "<div class=\"chips\"><span class=\"chip\"><span class=\"number-of-questions\">5</span> سؤال</div>";
+                            echo "<div class=\"chips\"><span class=\"chip\"><span class=\"number-of-questions\">{$row['questionCount']}</span> سؤال</div>";
                             echo "</div>";
                             echo "<div class=\"instructor-info\">";
                             echo "<h4>{$row['firstName']} {$row['lastName']}</h4>";
