@@ -19,7 +19,7 @@ if ($questionID <= 0) {
 }
 
 /* جلب بيانات السؤال الحالية (المفتاح id) */
-$q_sql = "SELECT * FROM QuizQuestion WHERE id = $questionID";
+$q_sql = "SELECT * FROM quizquestion WHERE id = $questionID";
 $q_res = mysqli_query($conn, $q_sql);
 $question = mysqli_fetch_assoc($q_res);
 if (!$question) {
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__update_question']))
   }
 
   /* تحديث بالأسماء الصحيحة للأعمدة */
-  $up_sql = "UPDATE QuizQuestion
+  $up_sql = "UPDATE quizquestion
              SET question = '$qtext',
                  answerA = '$optA',
                  answerB = '$optB',
