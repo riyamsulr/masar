@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل مستخدم</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="icon" href="images/logo.png">
+  <script src="script.js"></script>
+    <style>
+	footer {
+      margin-top: auto;
+      width: 100%;
+    }
+		#logo.rd {
+	display: flex;
+    flex-direction: column;
+    min-height: 15vh;
+	min-width: 15vh;
+	margin: 20px auto;
+	border-radius: 12px;
+	background-color: #f8f8f8;
+	padding: 8px;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+	max-width: 150px;
+	}
+  </style>
+</head>
+<body class="rd">
+  <header class="rd">
+    <img src="images/logo.png" alt="مسار" id="logo" class="rd">
+  </header>
+
+  <div class="tab-buttons rd">
+    <button class="tab-link rd" data-target="educator-signup">معلم</button>
+    <button class="tab-link rd" data-target="learner-signup">طالب</button>
+  </div>
+
+  <div id="educator-signup" class="tab-content rd">
+    <h2 class="rd">تسجيل معلم</h2>
+    <form class="rd" id="educator-signup-form" onsubmit="handleSubmit(event, 'Educator.php')">
+      <label class="rd">الاسم الأول</label>
+      <input type="text" required class="rd" placeholder="ادخل اسمك الأول">
+
+      <label class="rd">اسم العائلة</label>
+      <input type="text" required class="rd" placeholder="ادخل اسم العائلة">
+
+      <label class="rd">صورة المستخدم</label>
+      <input type="file" accept="image/*" class="rd">
+
+      <label class="rd">البريد الإلكتروني</label>
+      <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني">
+
+      <label class="rd">كلمة المرور</label>
+      <input type="password" required class="rd" placeholder="انشئ كلمة مرور">
+
+      <label class="rd">المواد التعليمية</label>
+      <div class="checkbox-group rd">
+        <label class="rd"><input type="checkbox" name="subjects" value="traffic-signs" class="rd">إشارات المرور</label>
+        <label class="rd"><input type="checkbox" name="subjects" value="traffic-rules" class="rd">قواعد المرور</label>
+        <label class="rd"><input type="checkbox" name="subjects" value="road-safety" class="rd">السلامة المرورية</label>
+      </div>
+
+      <input type="submit" value="تسجيل" class="submit rd">
+    </form>
+  </div>
+
+  <div id="learner-signup" class="tab-content rd">
+    <h2 class="rd">تسجيل طالب</h2>
+    <form class="rd" id="learner-signup-form" onsubmit="handleSubmit(event, 'Learner.php')">
+      <label class="rd">الاسم الأول</label>
+      <input type="text" required class="rd" placeholder="ادخل اسمك الأول">
+
+      <label class="rd">اسم العائلة</label>
+      <input type="text" required class="rd" placeholder="ادخل اسم العائلة">
+
+      <label class="rd">صورة المستخدم</label>
+      <input type="file" accept="image/*" class="rd">
+
+      <label class="rd">البريد الإلكتروني</label>
+      <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني">
+
+      <label class="rd">كلمة المرور</label>
+      <input type="password" required class="rd" placeholder="انشئ كلمة مرور">
+
+      <input type="submit" value="تسجيل" class="submit rd">
+    </form>
+  </div>
+     <footer>
+    &copy; 2025 جميع الحقوق محفوظة 
+  </footer>
+</body>
+</html>

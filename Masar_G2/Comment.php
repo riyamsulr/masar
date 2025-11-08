@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>التعليقات</title>
     <link rel="stylesheet" href="common.css">
-    <link rel="icon" href="logo.png">
+    <link rel="icon" href="images/logo.png">
     <style>
         .quiz-header {
             display: flex;
@@ -50,7 +51,7 @@
         <div class="quiz-header">
             <h1 class="section-title"><span class="accent"></span>تعليقات اختبار اشارات المرور</h1>
             <div class="link-group">
-            <a href="Educator.html" class="hl-link">رجوع</a>
+            <a href="Educator.php" class="hl-link">رجوع</a>
         </div>
         </div>
 
@@ -83,6 +84,10 @@
         </section>
 
     </div>
+    <footer>
+    &copy; 2025 جميع الحقوق محفوظة 
+  </footer>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const container = document.querySelector(".card");
