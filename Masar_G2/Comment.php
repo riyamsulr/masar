@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-
+<?php
+ include 'connection.php';
+?>
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -60,20 +62,34 @@
         <section class="section">
             <div class="card">
                 <h2 class="section-title"><span class="accent"></span> جميع التعليقات</h2>
-
-                <!-- Comment 1  -->
+                <?php
+                //Get comments based on quiz ID 
+                $qID = 1;
+                
+                $getComments = "SELECT comments, date FROM quizfeedback WHERE quizID={$qID}";
+                
+                if($result = mysqli_query($connection, $getComments)){
+                    while($row = mysqli_fetch_assoc($result)){
+                        echo "<div class='comment-item db-comment'>";
+                        echo "<p class=\"comment-text\">{$row['comments']}</p>";
+                        echo "<p class=\"comment-date\">{$row['date']}</p>";
+                        echo "</div>";
+                    }
+                }
+                ?>
+                <!-- Comment 1  
                 <div class="comment-item">
                     <p class="comment-text">اختبار مفيد جدا</p>
                     <p class="comment-date">9/15/2025, 1:20:00 PM</p>
                 </div>
 
-                <!-- Comment 2 -->
+                <!-- Comment 2 
                 <div class="comment-item">
                     <p class="comment-text">بعض الأسئلة كانت صعبة قليلاً، لكنها كانت مراجعة رائعة</p>
                     <p class="comment-date">5/15/2025, 12:20:00 PM</p>
                 </div>
 
-                <!-- Comment 3 -->
+                <!-- Comment 3 
                 <div class="comment-item">
                     <p class="comment-text"> مراجعة رائعة</p>
                     <p class="comment-date">11/15/2025, 12:20:00 PM</p>

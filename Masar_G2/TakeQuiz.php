@@ -117,10 +117,10 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $quizID = $_GET['quizID'];
+                                    $qID = $_GET['quizID'];
 
                                     $randquestions = "SELECT * FROM quizquestion
-                                    WHERE quizID = {$quizID}
+                                    WHERE quizID={$qID}
                                     ORDER BY RAND()
                                     LIMIT 5;";
 
@@ -136,25 +136,25 @@
                                             echo "<div class=\"q-title\">{$row['question']}</div>";
                                             echo "<ol class=\"choices\">";
                                             if ($row['correctAnswer'] == 'A') {
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"correct\">{$row['answerA']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerB']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerC']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerD']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"correct\">{$row['answerA']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerB']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerC']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerD']}</li>";
                                             } else if ($row['correctAnswer'] == 'B') {
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerA']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"correct\">{$row['answerB']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerC']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerD']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerA']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"correct\">{$row['answerB']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerC']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerD']}</li>";
                                             } else if ($row['correctAnswer'] == 'C') {
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerA']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerB']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"correct\">{$row['answerC']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerD']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerA']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerB']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"correct\">{$row['answerC']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerD']}</li>";
                                             } else {
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerA']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerB']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"incorrect\">{$row['answerC']}</li>";
-                                                echo "<li><input type=\"radio\" name=\"q1-answer\" value=\"correct\">{$row['answerD']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerA']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerB']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerC']}</li>";
+                                                echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"correct\">{$row['answerD']}</li>";
                                             }
                                             echo "</ol></div></div></td></tr>";
                                             $questionNum++;
