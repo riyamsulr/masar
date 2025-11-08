@@ -52,9 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__add_question'])) {
   }
 
   // إدخال في جدول الأسئلة
-  $sql = "INSERT INTO QuizQuestion
-          (quizID, question, answerA, answerB, answerC, answerD, correctAnswer, questionFigureFileName)
-          VALUES ($quizID, '$qtext', '$optA', '$optB', '$optC', '$optD', '$correct', $imgCol)";
+$sql = "INSERT INTO quizquestion
+        (quizID, question, answerA, answerB, answerC, answerD, correctAnswer, questionFigureFileName)
+        VALUES ($quizID, '$qtext', '$optA', '$optB', '$optC', '$optD', '$correct', " . ($imageName ? "'$imageName'" : "NULL") . ")";
 
   if (!mysqli_query($conn, $sql)) {
     die('خطأ في الإدراج: ' . mysqli_error($conn));
