@@ -2,7 +2,6 @@
 session_start();
 require 'connection.php';
 
-
 // السماح فقط للـ learner
 if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION['user_type'] !== 'learner')) {
   header("Location: index.php");
@@ -12,20 +11,40 @@ if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION[
 $userID = (int)$_SESSION['user_id'];
 
 // ====== 1) جلب بيانات الكويز (المعلم + الموضوع) ======
-$quizID = isset($_POST['quizID']) ? (int)$_POST['quizID'] : (int)($_GET['quizID'] ?? 0);
-$quiz = ['topicName'=>'','teacherName'=>''];
+$quizID = 0;
+if (isset($_POST['quizID'])) {
+  $quizID = (int)$_POST['quizID'];
+} elseif (isset($_GET['quizID'])) {
+  $quizID = (int)$_GET['quizID'];
+}
+
+$quiz = ['topicName'=>'', 'teacherName'=>''];
 if ($quizID > 0) {
   $sql = "SELECT T.topicName, CONCAT(U.firstName,' ',U.lastName) AS teacherName
           FROM Quiz Q
           JOIN Topic T ON Q.topicID = T.id
           JOIN User  U ON Q.educatorID = U.id
           WHERE Q.id = $quizID";
-  if ($res = mysqli_query($conn, $sql)) {
-    $quiz = mysqli_fetch_assoc($res) ?: $quiz;
+  $res = mysqli_query($conn, $sql);
+  if ($res) {
+    $row = mysqli_fetch_assoc($res);
+    if ($row) {
+      $quiz = $row;
+    }
   }
 }
-$teacherName = $quiz['teacherName'] ?: '—';
-$quizTitle   = 'Quiz — ' . ($quiz['topicName'] ?: '—');
+
+if (isset($quiz['teacherName']) && $quiz['teacherName'] !== '') {
+  $teacherName = $quiz['teacherName'];
+} else {
+  $teacherName = '—';
+}
+
+if (isset($quiz['topicName']) && $quiz['topicName'] !== '') {
+  $quizTitle = 'Quiz — ' . $quiz['topicName'];
+} else {
+  $quizTitle = 'Quiz — —';
+}
 
 // قيم افتراضية للعرض
 $scoreText = '—';
@@ -34,9 +53,24 @@ $feedbackMsg = "";
 
 // ====== 2) حساب الدرجة عند العودة من Take Quiz ======
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_quiz'])) {
-  $quizID      = (int)($_POST['quizID'] ?? 0);
-  $questionIDs = isset($_POST['questionIDs']) ? array_map('intval', (array)$_POST['questionIDs']) : [];
-  $answers     = isset($_POST['answers']) ? $_POST['answers'] : [];
+  // quizID
+  $quizID = 0;
+  if (isset($_POST['quizID'])) {
+    $quizID = (int)$_POST['quizID'];
+  }
+
+  // questionIDs
+  $questionIDs = [];
+  if (isset($_POST['questionIDs'])) {
+    $questionIDs = (array)$_POST['questionIDs'];
+    $questionIDs = array_map('intval', $questionIDs);
+  }
+
+  // answers
+  $answers = [];
+  if (isset($_POST['answers'])) {
+    $answers = $_POST['answers'];
+  }
 
   if ($quizID <= 0 || empty($questionIDs)) {
     die('بيانات الاختبار ناقصة');
@@ -49,27 +83,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_quiz'])) {
   $in = implode(',', $questionIDs);
   $right = [];
   $q = mysqli_query($conn, "SELECT id, correctAnswer FROM QuizQuestion WHERE id IN ($in)");
-  while ($row = mysqli_fetch_assoc($q)) {
-    $right[(int)$row['id']] = $row['correctAnswer'];
+  if ($q) {
+    while ($row = mysqli_fetch_assoc($q)) {
+      $right[(int)$row['id']] = $row['correctAnswer'];
+    }
   }
 
   // مقارنة إجابات الطالب
   foreach ($questionIDs as $qid) {
-    $ua = isset($answers[$qid]) ? strtoupper(trim($answers[$qid])) : '';
+    $ua = '';
+    if (isset($answers[$qid])) {
+      $ua = strtoupper(trim($answers[$qid]));
+    }
     if (isset($right[$qid]) && $ua === $right[$qid]) {
       $correctCount++;
     }
   }
 
   // نص الدرجة X / Y
-  $scoreText = $total ? ($correctCount . ' / ' . $total) : '0 / 0';
+  if ($total > 0) {
+    $scoreText = $correctCount . ' / ' . $total;
+  } else {
+    $scoreText = '0 / 0';
+  }
 
   // تسجيل المحاولة في TakenQuiz (حسب المخطط: بدون userID)
   $s = mysqli_real_escape_string($conn, $scoreText);
   mysqli_query($conn, "INSERT INTO TakenQuiz(quizID, score) VALUES($quizID, '$s')");
 
   // اختيار الفيديو
-  $ratio = ($total > 0) ? ($correctCount / $total) : 0;
+  $ratio = 0;
+  if ($total > 0) {
+    $ratio = $correctCount / $total;
+  }
   if ($ratio >= 0.8) {
     $videoFile = 'videos/congrats.mp4';
   } elseif ($ratio >= 0.5) {
@@ -80,30 +126,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_quiz'])) {
 }
 
 // ====== 3) حفظ التغذية الراجعة ثم التحويل لواجهة المتعلم ======
-// (اختياري) حفظ التغذية الراجعة ثم التحويل لواجهة المتعلم
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_feedback'])) {
-  $quizID   = (int)($_POST['quizID'] ?? 0);
-  $rating   = (int)($_POST['rating'] ?? 0);
-  $comments = mysqli_real_escape_string($conn, trim($_POST['note'] ?? ''));
-
-  // بما أنه اختياري: لا نعرض خطأ أبداً.
-  // إذا المستخدم أرسل "شيء" (تقييم أو ملاحظة) نحفظه؛
-  // إذا أرسل الفورم فاضي، نتجاهله ونحوّل بهدوء.
-  if ($quizID > 0 && ($rating > 0 || $comments !== '')) {
-    // إن كان عمود rating يسمح NULL، نخلي 0 = NULL:
-    $ratingSql = ($rating > 0) ? $rating : "NULL";
-    mysqli_query(
-      $conn,
-      "INSERT INTO QuizFeedback(quizID, rating, comments, date)
-       VALUES($quizID, $ratingSql, '$comments', NOW())"
-    );
+  // quizID
+  $quizID = 0;
+  if (isset($_POST['quizID'])) {
+    $quizID = (int)$_POST['quizID'];
   }
 
-  // في جميع الأحوال نرجّع للمتعلّم (بدون رسائل خطأ)
+  // rating
+  $rating = 0;
+  if (isset($_POST['rating'])) {
+    $rating = (int)$_POST['rating'];
+  }
+
+  // comments
+  $noteVal = '';
+  if (isset($_POST['note'])) {
+    $noteVal = $_POST['note'];
+  }
+  $comments = mysqli_real_escape_string($conn, trim($noteVal));
+
+  // اختياري: نحفظ فقط لو فيه شيء مرسل
+  if ($quizID > 0 && ($rating > 0 || $comments !== '')) {
+    // تجهيز قيمة rating (قد تكون NULL)
+    $ratingSql = "NULL";
+    if ($rating > 0) {
+      $ratingSql = (string)((int)$rating);
+    }
+
+    $ins = "INSERT INTO QuizFeedback(quizID, rating, comments, date)
+            VALUES($quizID, $ratingSql, '$comments', NOW())";
+    mysqli_query($conn, $ins);
+  }
+
   header('Location: Learner.php');
   exit;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -116,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_feedback']))
   <style>
     body{font-family:sans-serif;background:#f7f7f7;margin:0}
     header{background:#DDE584;padding:14px 20px;box-shadow:0 2px 6px rgba(0,0,0,.08);margin-bottom:20px}
-    .header-container{display:flex;align-items:center;max-width:1100px;margin:0 auto}
+    .header-container{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto}
     .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:bold;color:#2B3537}
     .logo img{width:40px;height:40px;object-fit:contain;border:none}
 
@@ -157,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_feedback']))
     </div>
 
     <!-- زر الرجوع -->
-    <a href="Learner.php" class="back-link" style="margin-right:auto;">العودة الى الصفحة الرئيسية </a>
+    <a href="Learner.php" class="back-link">العودة إلى الصفحة الرئيسية</a>
   </div>
 </header>
 
@@ -169,29 +227,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_feedback']))
     <div class="meta-box">
       <img src="pfp1.jpg" alt="صورة المعلّم">
       <div>
-<strong>المعلّم</strong>
+        <strong>المعلّم</strong>
         <div><?php echo htmlspecialchars($teacherName); ?></div>
       </div>
     </div>
   </div>
 
   <!-- النتيجة -->
-<h1 class="section-title">
-  <span class="accent"></span>
-  الاختبار — <?php echo htmlspecialchars($quiz['topicName'] ?? '—'); ?>
-</h1>
+  <h1 class="section-title">
+    <span class="accent"></span>
+    الاختبار — <?php
+      $topicForTitle = '—';
+      if (isset($quiz['topicName']) && $quiz['topicName'] !== '') {
+        $topicForTitle = $quiz['topicName'];
+      }
+      echo htmlspecialchars($topicForTitle);
+    ?>
+  </h1>
+
   <div class="score-box">
-    <h2>درجتك: <?php echo $scoreText ? htmlspecialchars($scoreText) : '—'; ?></h2>
+    <h2>
+      درجتك:
+      <?php
+        $scoreForView = '—';
+        if ($scoreText !== '') {
+          $scoreForView = $scoreText;
+        }
+        echo htmlspecialchars($scoreForView);
+      ?>
+    </h2>
     <video autoplay muted controls>
-  <source src="<?php echo htmlspecialchars($videoFile); ?>" type="video/mp4">
+      <source src="<?php echo htmlspecialchars($videoFile); ?>" type="video/mp4">
     </video>
   </div>
 
   <!-- الرأي -->
   <div class="form-card">
-    <div class="form-header">أعطِ رأيك</div>
+    <div class="form-header">أعطِ رأيك (اختياري)</div>
 
-    <?php if ($feedbackMsg): ?>
+    <?php if (!empty($feedbackMsg)): ?>
       <div class="card" style="padding:10px;border:1px solid #9c9;color:#060;margin:10px;"><?php echo $feedbackMsg; ?></div>
     <?php endif; ?>
 
@@ -216,12 +290,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__submit_feedback']))
     </form>
   </div>
 
-  <div style="margin-top:16px; text-align:right;">
-    <div class="link-group">
-      <a href="Learner.php" class="back-link">العودة إلى الصفحة الرئيسية</a>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -233,9 +301,11 @@ stars.forEach(star=>{
     ratingInput.value = value;
     stars.forEach(s=>{
       if (parseInt(s.getAttribute('data-value')) <= value){
-        s.innerHTML='&#9733;'; s.classList.add('filled');
+        s.innerHTML='&#9733;';
+        s.classList.add('filled');
       } else {
-        s.innerHTML='&#9734;'; s.classList.remove('filled');
+        s.innerHTML='&#9734;';
+        s.classList.remove('filled');
       }
     });
   });
