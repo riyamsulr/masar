@@ -64,7 +64,7 @@
                 <h2 class="section-title"><span class="accent"></span> جميع التعليقات</h2>
                 <?php
                 //Get comments based on quiz ID 
-                $qID = 1;
+                $qID = $_GET['quizID'];
                 
                 $getComments = "SELECT comments, date FROM quizfeedback WHERE quizID={$qID}";
                 

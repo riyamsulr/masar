@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <?php
+    session_start();
+    
     include 'connection.php';
-    $userID = 2;
+    
+    if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'learner') {
+        header("Location: login.php?error=not_learner");
+        exit();
+    }
+
+    
+    $userID = $_SESSION['id'];
     $firstName = '';
     $lastName = '';
     $pfp = '';
