@@ -17,7 +17,7 @@ if ($topics_result) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-
+    // Note: $connection is already open from above
     $user_type = strtolower($_POST['user_type']);
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $stmt->close();
 
-
+        // --- Handle File Upload (Dynamic Default) ---
         $photo_file_name = NULL;
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
             $upload_dir = 'images/';
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $connection->begin_transaction();
 
             try {
-
+                // --- Dynamic SQL for User Insert ---
                 $sql_cols = "firstName, lastName, emailAddress, password, userType";
                 $sql_vals = "?, ?, ?, ?, ?";
                 $types = "sssss";
@@ -79,24 +79,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $new_user_id = $connection->insert_id;
                 $stmt_user->close();
 
+                // --- NEW: Topic/Quiz Logic ---
+                // If they are an educator AND they selected subjects...
                 if ($user_type == 'educator' && !empty($_POST['subjects'])) {
                     $subjects = $_POST['subjects'];
                     
+                    // ...prepare to insert into the QUIZ table.
                     $stmt_quiz = $connection->prepare("INSERT INTO quiz (educatorID, topicID) VALUES (?, ?)");
                     
                     foreach ($subjects as $topic_id) {
-
+                        // Create a new, empty quiz for each selected topic.
                         $stmt_quiz->bind_param("ii", $new_user_id, $topic_id);
                         $stmt_quiz->execute();
                     }
                     $stmt_quiz->close();
                 }
-
+                // --- End new logic ---
 
                 $connection->commit();
                 $signup_success = "تم التسجيل بنjاح!";
 
-
+                // Set session variables consistently
                 $_SESSION['id'] = $new_user_id;
                 $_SESSION['user_id'] = $new_user_id;
                 $_SESSION['userType'] = $user_type; 
@@ -170,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         font-weight: bold;
     }
     
-
+    /* ============ login, homepage, signup ============ */
     body.rd {
       margin: 0;
       direction: rtl;
