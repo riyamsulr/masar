@@ -203,7 +203,7 @@ $recResult = mysqli_query($connection, $recSql);
                       }
                       echo "</ol>";
                       if(!empty($r['questionFigureFileName'])){
-                          echo "<img src='images/".($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
+                          echo "<img src='".($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
                       }
                       echo "</td>";
                       echo "<td>
