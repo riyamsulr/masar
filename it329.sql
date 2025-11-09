@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 08, 2025 at 08:41 PM
+-- Generation Time: Nov 09, 2025 at 02:14 PM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -204,9 +204,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `firstName`, `lastName`, `emailAddress`, `password`, `photoFileName`, `userType`) VALUES
-(1, 'جون', 'دو', 'admin@quiz.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', 'pfp1.jpg', 'educator'),
-(2, 'أحمد', 'ابراهيم', 'learner@quiz.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', 'pfp2.jpg', 'learner'),
-(3, 'اليس', 'سميث', 'aliece@gmail.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', NULL, 'learner'),
+(1, 'جون', 'دو', 'admin@quiz.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', 'images/pfp1.jpg', 'educator'),
+(2, 'أحمد', 'ابراهيم', 'learner@quiz.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', 'images/pfp2.jpg', 'learner'),
+(3, 'اليس', 'سميث', 'aliece@gmail.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', 'images/default-profile.png', 'learner'),
 (4, 'سارة', 'المعلّمة', 'educator2@quiz.com', '$2y$10$t3Bw/Tebx1JKDF.9RzT7XOF4nNzB2VGj4YOzs1O7fdJhFEWYVo2MW', 'images/pfp3.jpg', 'educator');
 
 --
@@ -315,7 +315,7 @@ ALTER TABLE `topic`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
