@@ -2,21 +2,25 @@
 session_start();
 require 'connection.php';
 
-if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION['user_type'] !== 'educator')) {
-  header("Location: index.php");
+if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'educator') {
+  header("Location: login.php");
   exit;
 }
 
 /* نقرأ معرّف السؤال من الرابط */
 $questionID = isset($_GET['questionID']) ? (int)$_GET['questionID'] : 0;
+if ($questionID <= 0 && isset($_GET['q'])) {
+  $questionID = (int)$_GET['q'];
+}
 if ($questionID <= 0) {
   header("Location: Educator.php");
   exit;
 }
 
+
 /* جلب بيانات السؤال الحالية */
 $q_sql = "SELECT * FROM quizquestion WHERE id = $questionID";
-$q_res = mysqli_query($conn, $q_sql);
+$q_res = mysqli_query($connection, $q_sql);
 $question = mysqli_fetch_assoc($q_res);
 if (!$question) {
   header("Location: Educator.php");
