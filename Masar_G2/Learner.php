@@ -228,15 +228,7 @@
                     </div>
                     <div class="photo">
                         <?php
-                            if (!empty($pfp)) {
-                                // User has a profile image
-                                $img = "images/{$pfp}";
-                            } else {
-                                // No image found, use default
-                                $img = "images/default-profile.png";
-                            }
-
-                            echo "<img src=\"$img\" alt=\"صورة الطالب\">";
+                            echo "<img src=\"{$pfp}\" alt=\"صورة الطالب\">";
                         ?>
 
                     </div>
@@ -275,6 +267,7 @@
                                         t.topicName, 
                                         u.firstName, 
                                         u.lastName,
+                                        u.photoFileName,
                                         COUNT(qq.id) AS questionCount
                                     FROM quiz q
                                     JOIN topic t 
@@ -297,7 +290,8 @@
                             q.topicID,
                             t.topicName,
                             u.firstName,
-                            u.lastName
+                            u.lastName, 
+                            u.photoFileName
                     ";
 
 
@@ -310,7 +304,7 @@
                             echo "</div>";
                             echo "<div class=\"instructor-info\">";
                             echo "<h4>{$row['firstName']} {$row['lastName']}</h4>";
-                            echo "<img src=\"images/default-profile.png\">";
+                            echo "<img src=\"{$row['photoFileName']}\" class=\"avatar-img\">";
                             echo "</div>";
                             echo "<a href=\"TakeQuiz.php?quizID={$row['id']}\"><button class=\"btn primary btn-full\">بدء الاختبار</button></a>";
                             echo "</article>";
@@ -364,7 +358,7 @@
                                             echo "<tr><td>{$row['topicName']}</td>";
                                             echo "<td>
                                                     <div class=\"hstack\">
-                                                        <img src=\"images/{$row['profileImage']}\" class=\"avatar-img\" alt=\"{$row['firstName']}\">
+                                                        <img src=\"{$row['profileImage']}\" class=\"avatar-img\" alt=\"{$row['firstName']}\">
                                                         <div>{$row['firstName']} {$row['lastName']}</div>
                                                     </div>
                                                 </td>";
@@ -372,7 +366,7 @@
                                                 echo "<td>
                                                         <div class=\"q-item has-media\">
                                                             <div class=\"q-media tall\">
-                                                                <img class=\"q-img\" src=\"images/{$row['questionFigureFileName']}\" />
+                                                                <img class=\"q-img\" src=\"{$row['questionFigureFileName']}\" />
                                                             </div>";
                                             } else {
                                                 echo "<td>
