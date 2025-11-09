@@ -1,43 +1,49 @@
 <!DOCTYPE html>
 <?php
-    session_start();
-    
-    include 'connection.php';
-    
-    if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'learner') {
-        header("Location: login.php?error=not_learner");
-        exit();
+session_start();
+
+include 'connection.php';
+
+if (!isset($_SESSION['id'])) {
+    header("Location: homepage.php");
+    exit();
+}
+
+
+if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'learner') {
+    header("Location: login.php?error=not_learner");
+    exit();
+}
+
+
+$userID = $_SESSION['id'];
+$firstName = '';
+$lastName = '';
+$pfp = '';
+$email = '';
+
+$getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id={$userID}";
+
+if ($result = mysqli_query($connection, $getUserInfo)) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $firstName = $row['firstName'];
+        $lastName = $row['lastName'];
+        $pfp = $row['photoFileName'];
+        $email = $row['emailAddress'];
     }
+}
 
-    
-    $userID = $_SESSION['id'];
-    $firstName = '';
-    $lastName = '';
-    $pfp = '';
-    $email = '';
+$fullName = $firstName . " " . $lastName;
 
-    $getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id={$userID}";
+$topicFilter = 0;
 
-    if ($result = mysqli_query($connection, $getUserInfo)) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $firstName = $row['firstName'];
-            $lastName = $row['lastName'];
-            $pfp = $row['photoFileName'];
-            $email = $row['emailAddress'];
-        }
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $_POST['topic'] = 0;
+}
 
-    $fullName = $firstName . " " . $lastName;
-
-    $topicFilter = 0;
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $_POST['topic'] = 0;
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topic'])) {
-        $topicFilter = intval($_POST['topic']);   // convert to number for safety
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topic'])) {
+    $topicFilter = intval($_POST['topic']);   // convert to number for safety
+}
 ?>
 
 <html lang="ar" dir="rtl">
@@ -210,7 +216,7 @@
             <!-- Topbar -->
             <div class="topbar">
                 <?php
-                    echo "<h1>مرحبًا، <span class=\"muted\">{$firstName}</span></h1>";
+                echo "<h1>مرحبًا، <span class=\"muted\">{$firstName}</span></h1>";
                 ?>
                 <a class="logout-link" href="homepage.php">تسجيل الخروج</a>
             </div>
@@ -222,13 +228,13 @@
                     <div>
                         <br>
                         <?php
-                            echo "<div><strong>الاسم:</strong>{$fullName}</div>";
-                            echo "<div><strong>البريد:</strong> {$email}</div>";
+                        echo "<div><strong>الاسم:</strong>{$fullName}</div>";
+                        echo "<div><strong>البريد:</strong> {$email}</div>";
                         ?>
                     </div>
                     <div class="photo">
                         <?php
-                            echo "<img src=\"{$pfp}\" alt=\"صورة الطالب\">";
+                        echo "<img src=\"{$pfp}\" alt=\"صورة الطالب\">";
                         ?>
 
                     </div>
@@ -242,15 +248,15 @@
                         <select class="filter-select" name="topic">
                             <option value="0">جميع المواضيع</option>
                             <?php
-                                $getTopics = "SELECT * FROM topic";
-                                
-                                if($result = mysqli_query($connection,$getTopics)){
-                                    while($row = mysqli_fetch_assoc($result)){
-                                        echo "<option value=\"{$row['id']}\" " . 
-                                            ($topicFilter == $row['id'] ? "selected" : "") . 
-                                            ">{$row['topicName']}</option>";
-                                    }
+                            $getTopics = "SELECT * FROM topic";
+
+                            if ($result = mysqli_query($connection, $getTopics)) {
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    echo "<option value=\"{$row['id']}\" " .
+                                    ($topicFilter == $row['id'] ? "selected" : "") .
+                                    ">{$row['topicName']}</option>";
                                 }
+                            }
                             ?>
                         </select>
                         <input type="submit" value="بحث" class="btn primary">
@@ -294,7 +300,6 @@
                             u.photoFileName
                     ";
 
-
                     if ($result = mysqli_query($connection, $quizList)) {
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo "<article class=\"quiz-card\">";
@@ -335,7 +340,7 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $getRecommendedQs = "SELECT 
+                                $getRecommendedQs = "SELECT 
                                             r.*,
                                             q.id AS quizID,
                                             q.educatorID,
@@ -353,27 +358,27 @@
                                             ON q.topicID = t.id
                                         WHERE r.learnerID = {$userID};";
 
-                                    if ($result = mysqli_query($connection, $getRecommendedQs)) {
-                                        while ($row = mysqli_fetch_assoc($result)) {
-                                            echo "<tr><td>{$row['topicName']}</td>";
-                                            echo "<td>
+                                if ($result = mysqli_query($connection, $getRecommendedQs)) {
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        echo "<tr><td>{$row['topicName']}</td>";
+                                        echo "<td>
                                                     <div class=\"hstack\">
                                                         <img src=\"{$row['profileImage']}\" class=\"avatar-img\" alt=\"{$row['firstName']}\">
                                                         <div>{$row['firstName']} {$row['lastName']}</div>
                                                     </div>
                                                 </td>";
-                                            if (!empty($row['questionFigureFileName'])) {
-                                                echo "<td>
+                                        if (!empty($row['questionFigureFileName'])) {
+                                            echo "<td>
                                                         <div class=\"q-item has-media\">
                                                             <div class=\"q-media tall\">
                                                                 <img class=\"q-img\" src=\"{$row['questionFigureFileName']}\" />
                                                             </div>";
-                                            } else {
-                                                echo "<td>
+                                        } else {
+                                            echo "<td>
                                                         <div class=\"q-item has-media\">";
-                                            }
-                                            if ($row['correctAnswer'] === 'A'){
-                                                echo "<div class=\"q-body\">
+                                        }
+                                        if ($row['correctAnswer'] === 'A') {
+                                            echo "<div class=\"q-body\">
                                                     <div><strong>السؤال:</strong>{$row['question']}</div>
                                                     <ol class=\"choices\">
                                                         <li class=\"correct\">{$row['answerA']}</li>
@@ -382,8 +387,8 @@
                                                         <li>{$row['answerD']}</li>
                                                     </ol>
                                                 </div>";
-                                            } else if ($row['correctAnswer'] === 'B'){
-                                                echo "<div class=\"q-body\">
+                                        } else if ($row['correctAnswer'] === 'B') {
+                                            echo "<div class=\"q-body\">
                                                     <div><strong>السؤال:</strong>{$row['question']}</div>
                                                     <ol class=\"choices\">
                                                         <li>{$row['answerA']}</li>
@@ -392,8 +397,8 @@
                                                         <li>{$row['answerD']}</li>
                                                     </ol>
                                                 </div>";
-                                            } else if ($row['correctAnswer'] === 'C'){
-                                                echo "<div class=\"q-body\">
+                                        } else if ($row['correctAnswer'] === 'C') {
+                                            echo "<div class=\"q-body\">
                                                     <div><strong>السؤال:</strong>{$row['question']}</div>
                                                     <ol class=\"choices\">
                                                         <li>{$row['answerA']}</li>
@@ -402,8 +407,8 @@
                                                         <li>{$row['answerD']}</li>
                                                     </ol>
                                                 </div>";
-                                            } else {
-                                                echo "<div class=\"q-body\">
+                                        } else {
+                                            echo "<div class=\"q-body\">
                                                     <div><strong>السؤال:</strong>{$row['question']}</div>
                                                     <ol class=\"choices\">
                                                         <li>{$row['answerA']}</li>
@@ -412,27 +417,27 @@
                                                         <li class=\"correct\">{$row['answerD']}</li>
                                                     </ol>
                                                 </div>";
-                                            }
-                                            echo "</div></td>";
-                                            if ($row['status']=== 'pending'){
-                                                echo "<td>
+                                        }
+                                        echo "</div></td>";
+                                        if ($row['status'] === 'pending') {
+                                            echo "<td>
                                                     <div>تحت الدراسة</div>
                                                 </td>";
-                                            } else if ($row['status']=== 'approved'){
-                                                echo "<td>
+                                        } else if ($row['status'] === 'approved') {
+                                            echo "<td>
                                                     <div>معتمد</div>
                                                 </td>";
-                                            } else {
-                                                echo "<td>
+                                        } else {
+                                            echo "<td>
                                                     <div>مرفوض</div>
                                                 </td>";
-                                            }
-                                            echo "<td>
+                                        }
+                                        echo "<td>
                                                     <div>{$row['comments']}</div>
                                                 </td>
                                               </tr>";
-                                        }
                                     }
+                                }
                                 ?>
 
                             </tbody>
