@@ -22,7 +22,7 @@ $total = mysqli_num_rows($result);
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="images/logo.png">
-  <title>الاختبار — <?php echo htmlspecialchars($quiz['topicName']); ?></title>
+  <title>الاختبار — <?php echo ($quiz['topicName']); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="common.css">
   <style>
@@ -54,7 +54,7 @@ $total = mysqli_num_rows($result);
 <div class="container">
 
   <div class="quiz-header">
-    <h1 class="section-title">الاختبار — <?php echo htmlspecialchars($quiz['topicName']); ?></h1>
+    <h1 class="section-title">الاختبار — <?php echo ($quiz['topicName']); ?></h1>
     <div class="link-group">
       <a href="Educator.php" class="hl-link">رجوع</a>
       <a href="add-question.php?quizID=<?php echo $quizID; ?>" class="hl-link">+ إضافة سؤال</a>
@@ -62,8 +62,8 @@ $total = mysqli_num_rows($result);
   </div>
 
   <div class="quiz-meta">
-    <div class="meta-box"><strong>الموضوع</strong><div><?php echo htmlspecialchars($quiz['topicName']); ?></div></div>
-    <div class="meta-box"><strong>المعلّم</strong><div><?php echo htmlspecialchars($quiz['firstName'] . " " . $quiz['lastName']); ?></div></div>
+    <div class="meta-box"><strong>الموضوع</strong><div><?php echo ($quiz['topicName']); ?></div></div>
+    <div class="meta-box"><strong>المعلّم</strong><div><?php echo ($quiz['firstName'] . " " . $quiz['lastName']); ?></div></div>
     <div class="meta-box"><strong>عدد الأسئلة</strong><div><?php echo $total; ?></div></div>
   </div>
 
@@ -89,23 +89,21 @@ $total = mysqli_num_rows($result);
                 echo "<tr>";
                 echo "<td>" . $i++ . "</td>";
                 echo "<td>";
-                echo "<div class='q-item'>";
                 if (!empty($row['questionFigureFileName'])) {
-                    echo "<div class='q-media tall'><img class='q-img' src='" . htmlspecialchars($row['questionFigureFileName']) . "' alt='صورة السؤال'></div>";
+                    echo "<img src='" . ($row['questionFigureFileName']) . "' alt='صورة السؤال' style='max-width:120px;border-radius:8px;margin-bottom:6px;'>";
                 }
-                echo "<div class='q-body'>";
-                echo "<div class='q-title'>" . htmlspecialchars($row['question']) . "</div>";
+                echo "<div class='q-title'>" . ($row['question']) . "</div>";
                 echo "<ol class='choices'>";
-                $choices = ['A' => 'answerA', 'B' => 'answerB', 'C' => 'answerC', 'D' => 'answerD'];
-                foreach ($choices as $key => $col) {
-                    $cls = ($row['correctAnswer'] == $key) ? "class='correct'" : "";
-                    echo "<li $cls>" . htmlspecialchars($row[$col]) . "</li>";
+                foreach (['A', 'B', 'C', 'D'] as $c) {
+                    $cls = ($row['correctAnswer'] == $c) ? "class='correct'" : "";
+                    echo "<li $cls>" . ($row['answer' . $c]) . "</li>";
                 }
-                echo "</ol></div></div></td>";
-                echo "<td><div class='link-group'>
-                        <a href='edit-question.php?q=" . $row['id'] . "' class='hl-link'>تعديل</a>
+                echo "</ol>";
+                echo "</td>";
+                echo "<td>
+                        <a href='edit-question.php?q=" . $row['id'] . "' class='hl-link'>تعديل</a> |
                         <a href='delete-question.php?q=" . $row['id'] . "' class='hl-link'>حذف</a>
-                      </div></td>";
+                      </td>";
                 echo "</tr>";
             }
             echo "</tbody></table>";
