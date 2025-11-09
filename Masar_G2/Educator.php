@@ -1,36 +1,52 @@
 <?php
 session_start();
-include 'connection.php';
+    include 'connection.php';
 
-/* التحقق من أن المستخدم معلّم */
-if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'educator') {
-    header("Location: login.php");
+if (!isset($_SESSION['id'])) {
+    header("Location: homepage.php");
     exit();
 }
 
-$educatorID = (int)$_SESSION['id'];
+if ($_SESSION['userType'] !== 'educator') {
+    header("Location: login.php?error=notEducator");
+    exit();
+}
 
-/* جلب بيانات المعلم */
-$userSql = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id = $educatorID";
-$userResult = mysqli_query($connection, $userSql);
-$user = mysqli_fetch_assoc($userResult);
 
-$firstName = $user['firstName'];
-$lastName  = $user['lastName'];
-$email     = $user['emailAddress'];
-$photoFile = $user['photoFileName'] != '' ? $user['photoFileName'] : 'images/default-profile.png';
-$fullName  = $firstName . ' ' . $lastName;
+    $educatorID = $_SESSION['id'];
+    $firstName = '';
+    $lastName = '';
+    $photoFile = '';
+    $email = '';
+
+    $getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id= $educatorID";
+
+    if ($result = mysqli_query($connection, $getUserInfo)) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $firstName = $row['firstName'];
+            $lastName = $row['lastName'];
+            $photoFile = $row['photoFileName'];
+            $email = $row['emailAddress'];
+        }
+    }
+
+    $fullName = $firstName . " " . $lastName;
+
+
 
 /* التخصصات */
-$topicsSql = "SELECT DISTINCT t.topicName
-              FROM quiz q JOIN topic t ON t.id = q.topicID
-              WHERE q.educatorID = $educatorID";
+$topicsSql = "SELECT DISTINCT t.topicName FROM quiz q JOIN topic t ON t.id = q.topicID WHERE q.educatorID = $educatorID";
 $topicsResult = mysqli_query($connection, $topicsSql);
-$topics = [];
+$specializations = "";
+$first = true;
 while ($row = mysqli_fetch_assoc($topicsResult)) {
-    $topics[] = $row['topicName'];
+    if (!$first) {
+        $specializations .= "، ";
+    }
+    $specializations .= $row['topicName'];
+    $first = false;
 }
-$specializations = !empty($topics) ? implode('، ', $topics) : "لا توجد تخصصات بعد.";
+
 
 /* الاختبارات */
 $quizSql = "SELECT q.id AS quizID, t.topicName,
@@ -39,7 +55,7 @@ $quizSql = "SELECT q.id AS quizID, t.topicName,
            (SELECT ROUND(AVG(tq.score),1) FROM takenquiz tq WHERE tq.quizID = q.id) AS avgScore,
            (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id) AS feedbackCount,
            (SELECT ROUND(AVG(qf.rating),1) FROM quizfeedback qf WHERE qf.quizID = q.id) AS avgRating,
-           (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id AND qf.comments <> '') AS commentsCount
+           (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id AND qf.comments != '') AS commentsCount
            FROM quiz q JOIN topic t ON t.id = q.topicID
            WHERE q.educatorID = $educatorID ORDER BY q.id";
 $quizResult = mysqli_query($connection, $quizSql);
@@ -109,7 +125,7 @@ $recResult = mysqli_query($connection, $recSql);
   <div class="container">
     <!-- Topbar -->
     <div class="topbar">
-      <h1>مرحبًا، <span class="muted"><?php echo htmlspecialchars($firstName); ?></span></h1>
+      <h1>مرحبًا، <span class="muted"><?php echo ($firstName); ?></span></h1>
       <a class="logout-link" href="login.php">تسجيل الخروج</a>
     </div>
 
@@ -118,12 +134,12 @@ $recResult = mysqli_query($connection, $recSql);
       <h2 class="section-title"><span class="accent"></span> معلومات المعلّم</h2>
       <div class="card educator">
         <div>
-          <div><strong>الاسم:</strong> <?php echo htmlspecialchars($fullName); ?></div>
-          <div><strong>البريد:</strong> <?php echo htmlspecialchars($email); ?></div>
-          <div><strong>التخصّصات:</strong> <?php echo htmlspecialchars($specializations); ?></div>
+          <div><strong>الاسم:</strong> <?php echo ($fullName); ?></div>
+          <div><strong>البريد:</strong> <?php echo ($email); ?></div>
+          <div><strong>التخصّصات:</strong> <?php echo ($specializations); ?></div>
         </div>
         <div class="photo">
-          <img src="<?php echo htmlspecialchars($photoFile); ?>" alt="صورة المعلّم">
+          <img src="<?php echo ($photoFile); ?>" alt="صورة المعلّم">
         </div>
       </div>
     </section>
@@ -138,7 +154,7 @@ $recResult = mysqli_query($connection, $recSql);
         } else {
             while ($q = mysqli_fetch_assoc($quizResult)) {
                 echo '<article class="quiz-card">';
-                echo '<h3 class="quiz-title"><a href="Quiz.php?quizID='.$q['quizID'].'">'.htmlspecialchars($q['topicName']).'</a></h3>';
+                echo '<h3 class="quiz-title"><a href="Quiz.php?quizID='.$q['quizID'].'">'.($q['topicName']).'</a></h3>';
                 echo '<div class="chips"><span class="chip">'.$q['questionCount'].' سؤال</span>';
                 if ($q['takenCount'] > 0) echo '<span class="chip">'.$q['takenCount'].' مجرّب</span></div>';
                 if ($q['takenCount'] > 0 && $q['avgScore'] !== null)
@@ -176,18 +192,18 @@ $recResult = mysqli_query($connection, $recSql);
               } else {
                   while ($r = mysqli_fetch_assoc($recResult)) {
                       echo "<tr>";
-                      echo "<td>".htmlspecialchars($r['topicName'])."</td>";
-                      echo "<td><div class='hstack'>".htmlspecialchars($r['learnerFirst'].' '.$r['learnerLast'])."</div></td>";
+                      echo "<td>".($r['topicName'])."</td>";
+                      echo "<td><div class='hstack'>".($r['learnerFirst'].' '.$r['learnerLast'])."</div></td>";
                       echo "<td>";
-                      echo "<div><strong>السؤال:</strong> ".htmlspecialchars($r['question'])."</div>";
+                      echo "<div><strong>السؤال:</strong> ".($r['question'])."</div>";
                       echo "<ol class='choices'>";
                       foreach(['A','B','C','D'] as $c){
-                          $val = htmlspecialchars($r['answer'.$c]);
+                          $val = ($r['answer'.$c]);
                           echo $r['correctAnswer']==$c ? "<li class='correct'>$val</li>" : "<li>$val</li>";
                       }
                       echo "</ol>";
                       if(!empty($r['questionFigureFileName'])){
-                          echo "<img src='images/".htmlspecialchars($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
+                          echo "<img src='images/".($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
                       }
                       echo "</td>";
                       echo "<td>
