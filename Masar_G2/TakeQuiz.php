@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <?php
-    include 'connection.php';
+        include 'connection.php';
+
+        $qID = $_GET['quizID'];
     ?>
 
     <head>
@@ -92,19 +94,46 @@
 
             <!-- Meta -->
             <div class="quiz-meta">
-                <div class="meta-box"><strong>الموضوع</strong>
-                    <div>الإشارات التحذيرية</div>
-                </div>
-                <div class="meta-box"><strong>المعلّم</strong>
-                    <div>جون دو</div>
-                </div>
-                <div class="meta-box"><strong>إجمالي الأسئلة</strong>
-                    <div>5</div>
-                </div>
+                <?php
+                
+                    $countQuery = "SELECT COUNT(*) AS total FROM quizquestion WHERE quizID = {$qID}";
+                    $countResult = mysqli_query($connection, $countQuery);
+                    $countRow = mysqli_fetch_assoc($countResult);
+                    $questionCount = $countRow['total'];
+
+                    // Display either 5 or the real count
+                    $displayCount = ($questionCount >= 5) ? 5 : $questionCount;
+
+                    $quizInfo = "SELECT 
+                                    u.firstName,
+                                    u.lastName,
+                                    t.topicName
+                                FROM quiz q
+                                JOIN user u 
+                                    ON q.educatorID = u.id
+                                JOIN topic t
+                                    ON q.topicID = t.id
+                                WHERE q.id = {$qID};
+                                ";
+                    
+                    if($result = mysqli_query($connection,$quizInfo)){
+                        while($row = mysqli_fetch_assoc($result)){
+                            echo "<div class=\"meta-box\"><strong>الموضوع</strong>";
+                            echo "<div>{$row['topicName']}</div></div>";
+                            echo "<div class=\"meta-box\"><strong>المعلّم</strong>
+                                    <div>{$row['firstName']} {$row['lastName']}</div>
+                                </div>";
+                            echo "<div class=\"meta-box\"><strong>إجمالي الأسئلة</strong>
+                                    <div>{$displayCount}</div>
+                                </div>";
+                        }
+                    }
+                ?>
             </div>
 
             <!-- Questions --> 
-            <form action="quiz-score.php" method="post">
+            <form action="quiz-score.php" method="POST">
+                <input type="hidden" name="quizID" value="<?php echo $qID; ?>">
                 <section class="section">
                     <div class="card table-card">
                         <div class="table-wrap">
@@ -117,22 +146,35 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $qID = $_GET['quizID'];
+                                    
+                                    // Count questions in this quiz
+                                    $countQuery = "SELECT COUNT(*) AS total FROM quizquestion WHERE quizID={$qID}";
+                                    $countResult = mysqli_query($connection, $countQuery);
+                                    $countRow = mysqli_fetch_assoc($countResult);
+                                    $totalQuestions = $countRow['total'];
 
-                                    $randquestions = "SELECT * FROM quizquestion
-                                    WHERE quizID={$qID}
-                                    ORDER BY RAND()
-                                    LIMIT 5;";
+                                    // Build correct query based on count
+                                    if ($totalQuestions <= 5) {
+                                        $randquestions = "SELECT * FROM quizquestion WHERE quizID={$qID} ORDER BY RAND()";
+                                    } else {
+                                        $randquestions = "SELECT * FROM quizquestion WHERE quizID={$qID} ORDER BY RAND() LIMIT 5";
+                                    }
 
                                     if ($result = mysqli_query($connection, $randquestions)) {
                                         $questionNum = 1;
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             echo "<tr id=\"q{$questionNum}\">";
                                             echo "<td>{$questionNum}</td>";
-                                            echo "<td> <div class=\"q-item has-media\">";
-                                            echo "<div class=\"q-media tall\">";
-                                            echo "<img class=\"q-img\" src=\"{$row['questionFigureFileName']}\" loading=\"lazy\" decoding=\"async\">";
-                                            echo "</div> <div class=\"q-body\">";
+                                            echo "<td>";
+                                            echo "<input type=\"hidden\" name=\"questionIDs[]\" value=\"{$row['id']}\">";
+                                            echo "<div class=\"q-item has-media\">";
+                                            // Show image only if the filename is not empty
+                                            if (!empty($row['questionFigureFileName'])) {
+                                                echo "<div class=\"q-media tall\">";
+                                                echo "<img class=\"q-img\" src=\"{$row['questionFigureFileName']}\" loading=\"lazy\" decoding=\"async\">";
+                                                echo "</div>";
+                                            }
+                                            echo "<div class=\"q-body\">";
                                             echo "<div class=\"q-title\">{$row['question']}</div>";
                                             echo "<ol class=\"choices\">";
                                             if ($row['correctAnswer'] == 'A') {
@@ -161,135 +203,6 @@
                                         }
                                     }
                                     ?>
-                                    <!-- Q1 
-                                    <tr id="q1">
-                                        <td>1</td>
-                                        <td>
-                                            <div class="q-item has-media">
-                                                <div class="q-media tall">
-                                                    <img class="q-img" src="images/signs/sharp-right.png"
-                                                        alt="منعطف حاد لليمين">
-                                                </div>
-                                                <div class="q-body">
-                                                    <div class="q-title">ماذا تعني هذه الإشارة؟</div>
-                                                    <ol class="choices">
-                                                        <li><input type="radio" name="q1-answer" value="correct">منعطف حاد
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q1-answer" value="incorrect">منعطف حاد
-                                                            لليسار</li>
-                                                        <li><input type="radio" name="q1-answer" value="incorrect">منعطف
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q1-answer" value="incorrect">منعطف
-                                                            لليسار</li>
-                                                    </ol>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-    
-                                    <!-- Q2 
-                                    <tr id="q2">
-                                        <td>2</td>
-                                        <td>
-                                            <div class="q-item has-media">
-                                                <div class="q-media tall">
-                                                    <img class="q-img" src="images/signs/sharp-left.png"
-                                                        alt="منعطف حاد لليسار" loading="lazy" decoding="async">
-                                                </div>
-                                                <div class="q-body">
-                                                    <div class="q-title">ماذا تعني هذه الإشارة؟</div>
-                                                    <ol class="choices">
-                                                        <li><input type="radio" name="q2-answer" value="incorrect">منعطف حاد
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q2-answer" value="correct">منعطف حاد
-                                                            لليسار</li>
-                                                        <li><input type="radio" name="q2-answer" value="incorrect">منعطف
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q2-answer" value="incorrect">منعطف
-                                                            لليسار</li>
-                                                    </ol>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-    
-                                    <!-- Q3 
-                                    <tr id="q3">
-                                        <td>3</td>
-                                        <td>
-                                            <div class="q-item has-media">
-                                                <div class="q-media tall">
-                                                    <img class="q-img" src="images/signs/right.png"
-                                                        alt="منعطف لليمين" loading="lazy" decoding="async">
-                                                </div>
-                                                <div class="q-body">
-                                                    <div class="q-title">ماذا تعني هذه الإشارة؟</div>
-                                                    <ol class="choices">
-                                                        <li><input type="radio" name="q3-answer" value="incorrect">منعطف حاد
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q3-answer" value="incorrect">منعطف حاد
-                                                            لليسار</li>
-                                                        <li><input type="radio" name="q3-answer" value="correct">منعطف
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q3-answer" value="incorrect">منعطف
-                                                            لليسار</li>
-                                                    </ol>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-    
-                                    <!-- Q4 
-                                    <tr id="q4">
-                                        <td>4</td>
-                                        <td>
-                                            <div class="q-item has-media">
-                                                <div class="q-media tall">
-                                                    <img class="q-img" src="images/signs/left.png"
-                                                        alt="منعطف لليسار" loading="lazy" decoding="async">
-                                                </div>
-                                                <div class="q-body">
-                                                    <div class="q-title">ماذا تعني هذه الإشارة؟</div>
-                                                    <ol class="choices">
-                                                        <li><input type="radio" name="q4-answer" value="incorrect">منعطف حاد
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q4-answer" value="incorrect">منعطف حاد
-                                                            لليسار</li>
-                                                        <li><input type="radio" name="q4-answer" value="incorrect">منعطف
-                                                            لليمين</li>
-                                                        <li><input type="radio" name="q4-answer" value="correct">منعطف
-                                                            لليسار</li>
-                                                    </ol>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-    
-                                    <!-- Q5 
-                                    <tr id="q5">
-                                        <td>5</td>
-                                        <td>
-                                            <div class="q-item has-media">
-                                                <div class="q-media tall">
-                                                    <img class="q-img" src="images/signs/converge-left.png"
-                                                        alt="اندماج من ناحية اليسار" loading="lazy" decoding="async">
-                                                </div>
-                                                <div class="q-body">
-                                                    <div class="q-title">ماذا تعني هذه الإشارة؟</div>
-                                                    <ol class="choices">
-                                                        <li><input type="radio" name="q5-answer" value="correct">اندماج من
-                                                            ناحية اليسار</li>
-                                                        <li><input type="radio" name="q5-answer" value="incorrect">طلاب
-                                                            مدرسة</li>
-                                                        <li><input type="radio" name="q5-answer" value="incorrect">أعمال
-                                                            طريق</li>
-                                                        <li><input type="radio" name="q5-answer" value="incorrect">حركة مرور
-                                                            يديرها شرطي</li>
-                                                    </ol>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr> -->
 
                                 </tbody>
                             </table>

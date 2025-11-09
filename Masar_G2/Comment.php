@@ -77,25 +77,6 @@
                     }
                 }
                 ?>
-                <!-- Comment 1  
-                <div class="comment-item">
-                    <p class="comment-text">اختبار مفيد جدا</p>
-                    <p class="comment-date">9/15/2025, 1:20:00 PM</p>
-                </div>
-
-                <!-- Comment 2 
-                <div class="comment-item">
-                    <p class="comment-text">بعض الأسئلة كانت صعبة قليلاً، لكنها كانت مراجعة رائعة</p>
-                    <p class="comment-date">5/15/2025, 12:20:00 PM</p>
-                </div>
-
-                <!-- Comment 3 
-                <div class="comment-item">
-                    <p class="comment-text"> مراجعة رائعة</p>
-                    <p class="comment-date">11/15/2025, 12:20:00 PM</p>
-                </div>
-
-
             </div>
         </section>
 

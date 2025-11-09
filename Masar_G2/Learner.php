@@ -1,24 +1,34 @@
 <!DOCTYPE html>
 <?php
-include 'connection.php';
-$userID = 2;
-$firstName = '';
-$lastName = '';
-$pfp = '';
-$email = '';
+    include 'connection.php';
+    $userID = 2;
+    $firstName = '';
+    $lastName = '';
+    $pfp = '';
+    $email = '';
 
-$getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id={$userID}";
+    $getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id={$userID}";
 
-if ($result = mysqli_query($connection, $getUserInfo)) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        $firstName = $row['firstName'];
-        $lastName = $row['lastName'];
-        $pfp = $row['photoFileName'];
-        $email = $row['emailAddress'];
+    if ($result = mysqli_query($connection, $getUserInfo)) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $firstName = $row['firstName'];
+            $lastName = $row['lastName'];
+            $pfp = $row['photoFileName'];
+            $email = $row['emailAddress'];
+        }
     }
-}
 
-$fullName = $firstName . " " . $lastName;
+    $fullName = $firstName . " " . $lastName;
+
+    $topicFilter = 0;
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $_POST['topic'] = 0;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topic'])) {
+        $topicFilter = intval($_POST['topic']);   // convert to number for safety
+    }
 ?>
 
 <html lang="ar" dir="rtl">
@@ -190,9 +200,8 @@ $fullName = $firstName . " " . $lastName;
 
             <!-- Topbar -->
             <div class="topbar">
-                <!-- <h1>مرحبًا، <span class="muted">سارة</span></h1> -->
                 <?php
-                echo "<h1>مرحبًا، <span class=\"muted\">{$firstName}</span></h1>";
+                    echo "<h1>مرحبًا، <span class=\"muted\">{$firstName}</span></h1>";
                 ?>
                 <a class="logout-link" href="homepage.php">تسجيل الخروج</a>
             </div>
@@ -204,17 +213,23 @@ $fullName = $firstName . " " . $lastName;
                     <div>
                         <br>
                         <?php
-                        echo "<div><strong>الاسم:</strong>{$fullName}</div>";
-                        echo "<div><strong>البريد:</strong> {$email}</div>";
+                            echo "<div><strong>الاسم:</strong>{$fullName}</div>";
+                            echo "<div><strong>البريد:</strong> {$email}</div>";
                         ?>
-                        <!-- <div><strong>الاسم:</strong> سارة محمد</div>
-                        <div><strong>البريد:</strong> sara@example.com</div> -->
                     </div>
                     <div class="photo">
                         <?php
-                        echo "<img src=\"images/{$pfp}\" alt=\"صورة الطالب\">";
+                            if (!empty($pfp)) {
+                                // User has a profile image
+                                $img = "images/{$pfp}";
+                            } else {
+                                // No image found, use default
+                                $img = "images/default-profile.png";
+                            }
+
+                            echo "<img src=\"$img\" alt=\"صورة الطالب\">";
                         ?>
-                        <!-- <img src="images/default-profile.png" alt="صورة الطالب">-->
+
                     </div>
                 </div>
             </section>
@@ -222,12 +237,20 @@ $fullName = $firstName . " " . $lastName;
             <section class="section">
                 <div class="quiz-section">
                     <h2 class="section-title"><span class="accent"></span> الاختبارات</h2>
-                    <form action="" method="POST">
-                        <select class="filter-select">
-                            <option value="all">جميع المواضيع</option>
-                            <option value="traffic-signs">إشارات المرور</option>
-                            <option value="traffic-rules">قواعد المرور</option>
-                            <option value="road-safety">السلامة المرورية</option>
+                    <form action="Learner.php" method="POST">
+                        <select class="filter-select" name="topic">
+                            <option value="0">جميع المواضيع</option>
+                            <?php
+                                $getTopics = "SELECT * FROM topic";
+                                
+                                if($result = mysqli_query($connection,$getTopics)){
+                                    while($row = mysqli_fetch_assoc($result)){
+                                        echo "<option value=\"{$row['id']}\" " . 
+                                            ($topicFilter == $row['id'] ? "selected" : "") . 
+                                            ">{$row['topicName']}</option>";
+                                    }
+                                }
+                            ?>
                         </select>
                         <input type="submit" value="بحث" class="btn primary">
                     </form>
@@ -236,24 +259,37 @@ $fullName = $firstName . " " . $lastName;
 
                     <?php
                     $quizList = "
-                            SELECT 
-                                q.id, 
-                                q.educatorID, 
-                                q.topicID, 
-                                t.topicName, 
-                                u.firstName, 
-                                u.lastName,
-                                COUNT(qq.id) AS questionCount
-                            FROM quiz q
-                            JOIN topic t 
-                                ON q.topicID = t.id
-                            JOIN user u 
-                                ON q.educatorID = u.id
-                            LEFT JOIN quizquestion qq
-                                ON q.id = qq.quizID
-                            GROUP BY 
-                                q.id, q.educatorID, q.topicID, t.topicName, u.firstName, u.lastName;
-                        ";
+                                    SELECT 
+                                        q.id, 
+                                        q.educatorID, 
+                                        q.topicID, 
+                                        t.topicName, 
+                                        u.firstName, 
+                                        u.lastName,
+                                        COUNT(qq.id) AS questionCount
+                                    FROM quiz q
+                                    JOIN topic t 
+                                        ON q.topicID = t.id
+                                    JOIN user u 
+                                        ON q.educatorID = u.id
+                                    LEFT JOIN quizquestion qq
+                                        ON q.id = qq.quizID
+                                ";
+
+                    // apply filter only if topic chosen
+                    if ($topicFilter != 0) {
+                        $quizList .= " WHERE q.topicID = {$topicFilter} ";
+                    }
+
+                    $quizList .= "
+                        GROUP BY 
+                            q.id,
+                            q.educatorID,
+                            q.topicID,
+                            t.topicName,
+                            u.firstName,
+                            u.lastName
+                    ";
 
 
                     if ($result = mysqli_query($connection, $quizList)) {
@@ -272,42 +308,6 @@ $fullName = $firstName . " " . $lastName;
                         }
                     }
                     ?>
-
-                    <!-- <article class="quiz-card">
-                        <div class="quiz-info">
-                            <h3 class="quiz-title"><a href="">إشارات المرور</a></h3>
-                            <div class="chips"><span class="chip"><span class="number-of-questions">5</span> سؤال</div>
-                        </div>
-                        <div class="instructor-info">
-                            <h4>أ. جون</h4>
-                            <img src="images/default-profile.png">
-                        </div>
-                        <a href="TakeQuiz.php"><button class="btn primary btn-full">بدء الاختبار</button></a>
-                    </article>
-    
-                    <article class="quiz-card">
-                        <div class="quiz-info">
-                            <h3 class="quiz-title"><a href="">قواعد المرور</a></h3>
-                            <div class="chips"><span class="chip"><span class="number-of-questions">0</span> سؤال</div>
-                        </div>
-                        <div class="instructor-info">
-                            <h4>أ. جون</h4>
-                            <img src="images/default-profile.png">
-                        </div>
-                        <a href="TakeQuiz.php"><button class="btn primary btn-full">بدء الاختبار</button></a>
-                    </article>
-    
-                    <article class="quiz-card">
-                        <div class="quiz-info">
-                            <h3 class="quiz-title"><a href="">السلامة المرورية</a></h3>
-                            <div class="chips"><span class="chip"><span class="number-of-questions">0</span> سؤال</div>
-                        </div>
-                        <div class="instructor-info">
-                            <h4>أ. جون</h4>
-                            <img src="images/default-profile.png">
-                        </div>
-                        <a href="TakeQuiz.php"><button class="btn primary btn-full">بدء الاختبار</button></a>
-                    </article> -->
 
                 </div>
             </section>
@@ -332,171 +332,105 @@ $fullName = $firstName . " " . $lastName;
                             </thead>
                             <tbody>
                                 <?php
-                                $getRecommendedQs = "SELECT 
-                                        r.*,
-                                        q.id AS quizID,
-                                        q.educatorID,
-                                        q.topicID,
-                                        t.topicName,
-                                        u.firstName,
-                                        u.lastName,
-                                        u.photoFileName AS profileImage
-                                    FROM recommendedquestion r
-                                    JOIN quiz q 
-                                        ON r.quizID = q.id
-                                    JOIN user u 
-                                        ON q.educatorID = u.id
-                                    JOIN topic t
-                                        ON q.topicID = t.id
-                                    WHERE r.learnerID = {$userID};";
+                                    $getRecommendedQs = "SELECT 
+                                            r.*,
+                                            q.id AS quizID,
+                                            q.educatorID,
+                                            q.topicID,
+                                            t.topicName,
+                                            u.firstName,
+                                            u.lastName,
+                                            u.photoFileName AS profileImage
+                                        FROM recommendedquestion r
+                                        JOIN quiz q 
+                                            ON r.quizID = q.id
+                                        JOIN user u 
+                                            ON q.educatorID = u.id
+                                        JOIN topic t
+                                            ON q.topicID = t.id
+                                        WHERE r.learnerID = {$userID};";
 
-                                if ($result = mysqli_query($connection, $getRecommendedQs)) {
-                                    while ($row = mysqli_fetch_assoc($result)) {
-                                        echo "<tr><td>{$row['topicName']}</td>";
-                                        echo "<td>
-                                                <div class=\"hstack\">
-                                                    <img src=\"images/{$row['profileImage']}\" class=\"avatar-img\" alt=\"{$row['firstName']}\">
-                                                    <div>{$row['firstName']} {$row['lastName']}</div>
-                                                </div>
-                                            </td>";
-                                        if (!empty($row['questionFigureFileName'])) {
+                                    if ($result = mysqli_query($connection, $getRecommendedQs)) {
+                                        while ($row = mysqli_fetch_assoc($result)) {
+                                            echo "<tr><td>{$row['topicName']}</td>";
                                             echo "<td>
-                                                    <div class=\"q-item has-media\">
-                                                        <div class=\"q-media tall\">
-                                                            <img class=\"q-img\" src=\"images/{$row['questionFigureFileName']}\" />
-                                                        </div>";
-                                        } else {
+                                                    <div class=\"hstack\">
+                                                        <img src=\"images/{$row['profileImage']}\" class=\"avatar-img\" alt=\"{$row['firstName']}\">
+                                                        <div>{$row['firstName']} {$row['lastName']}</div>
+                                                    </div>
+                                                </td>";
+                                            if (!empty($row['questionFigureFileName'])) {
+                                                echo "<td>
+                                                        <div class=\"q-item has-media\">
+                                                            <div class=\"q-media tall\">
+                                                                <img class=\"q-img\" src=\"images/{$row['questionFigureFileName']}\" />
+                                                            </div>";
+                                            } else {
+                                                echo "<td>
+                                                        <div class=\"q-item has-media\">";
+                                            }
+                                            if ($row['correctAnswer'] === 'A'){
+                                                echo "<div class=\"q-body\">
+                                                    <div><strong>السؤال:</strong>{$row['question']}</div>
+                                                    <ol class=\"choices\">
+                                                        <li class=\"correct\">{$row['answerA']}</li>
+                                                        <li>{$row['answerB']}ر</li>
+                                                        <li>{$row['answerC']}</li>
+                                                        <li>{$row['answerD']}</li>
+                                                    </ol>
+                                                </div>";
+                                            } else if ($row['correctAnswer'] === 'B'){
+                                                echo "<div class=\"q-body\">
+                                                    <div><strong>السؤال:</strong>{$row['question']}</div>
+                                                    <ol class=\"choices\">
+                                                        <li>{$row['answerA']}</li>
+                                                        <li class=\"correct\">{$row['answerB']}ر</li>
+                                                        <li>{$row['answerC']}</li>
+                                                        <li>{$row['answerD']}</li>
+                                                    </ol>
+                                                </div>";
+                                            } else if ($row['correctAnswer'] === 'C'){
+                                                echo "<div class=\"q-body\">
+                                                    <div><strong>السؤال:</strong>{$row['question']}</div>
+                                                    <ol class=\"choices\">
+                                                        <li>{$row['answerA']}</li>
+                                                        <li>{$row['answerB']}ر</li>
+                                                        <li class=\"correct\">{$row['answerC']}</li>
+                                                        <li>{$row['answerD']}</li>
+                                                    </ol>
+                                                </div>";
+                                            } else {
+                                                echo "<div class=\"q-body\">
+                                                    <div><strong>السؤال:</strong>{$row['question']}</div>
+                                                    <ol class=\"choices\">
+                                                        <li>{$row['answerA']}</li>
+                                                        <li>{$row['answerB']}ر</li>
+                                                        <li>{$row['answerC']}</li>
+                                                        <li class=\"correct\">{$row['answerD']}</li>
+                                                    </ol>
+                                                </div>";
+                                            }
+                                            echo "</div></td>";
+                                            if ($row['status']=== 'pending'){
+                                                echo "<td>
+                                                    <div>تحت الدراسة</div>
+                                                </td>";
+                                            } else if ($row['status']=== 'approved'){
+                                                echo "<td>
+                                                    <div>معتمد</div>
+                                                </td>";
+                                            } else {
+                                                echo "<td>
+                                                    <div>مرفوض</div>
+                                                </td>";
+                                            }
                                             echo "<td>
-                                                    <div class=\"q-item has-media\">";
+                                                    <div>{$row['comments']}</div>
+                                                </td>
+                                              </tr>";
                                         }
-                                        if ($row['correctAnswer'] === 'A'){
-                                            echo "<div class=\"q-body\">
-                                                <div><strong>السؤال:</strong>{$row['question']}</div>
-                                                <ol class=\"choices\">
-                                                    <li class=\"correct\">{$row['answerA']}</li>
-                                                    <li>{$row['answerB']}ر</li>
-                                                    <li>{$row['answerC']}</li>
-                                                    <li>{$row['answerD']}</li>
-                                                </ol>
-                                            </div>";
-                                        } else if ($row['correctAnswer'] === 'B'){
-                                            echo "<div class=\"q-body\">
-                                                <div><strong>السؤال:</strong>{$row['question']}</div>
-                                                <ol class=\"choices\">
-                                                    <li>{$row['answerA']}</li>
-                                                    <li class=\"correct\">{$row['answerB']}ر</li>
-                                                    <li>{$row['answerC']}</li>
-                                                    <li>{$row['answerD']}</li>
-                                                </ol>
-                                            </div>";
-                                        } else if ($row['correctAnswer'] === 'C'){
-                                            echo "<div class=\"q-body\">
-                                                <div><strong>السؤال:</strong>{$row['question']}</div>
-                                                <ol class=\"choices\">
-                                                    <li>{$row['answerA']}</li>
-                                                    <li>{$row['answerB']}ر</li>
-                                                    <li class=\"correct\">{$row['answerC']}</li>
-                                                    <li>{$row['answerD']}</li>
-                                                </ol>
-                                            </div>";
-                                        } else {
-                                            echo "<div class=\"q-body\">
-                                                <div><strong>السؤال:</strong>{$row['question']}</div>
-                                                <ol class=\"choices\">
-                                                    <li>{$row['answerA']}</li>
-                                                    <li>{$row['answerB']}ر</li>
-                                                    <li>{$row['answerC']}</li>
-                                                    <li class=\"correct\">{$row['answerD']}</li>
-                                                </ol>
-                                            </div>";
-                                        }
-                                        echo "</div></td>";
-                                        if ($row['status']=== 'pending'){
-                                            echo "<td>
-                                                <div>تحت الدراسة</div>
-                                            </td>";
-                                        } else if ($row['status']=== 'approved'){
-                                            echo "<td>
-                                                <div>معتمد</div>
-                                            </td>";
-                                        } else {
-                                            echo "<td>
-                                                <div>مرفوض</div>
-                                            </td>";
-                                        }
-                                        echo "<td>
-                                                <div>{$row['comments']}</div>
-                                            </td>
-                                          </tr>";
                                     }
-                                }
                                 ?>
-                                <!-- صف 1 (صورة طويلة بلا إطار) -->
-                                <!-- <tr>
-                                    <td>إشارات المرور</td>
-                                    <td>
-                                        <div class="hstack">
-                                            <img src="images/default-profile.png" class="avatar-img" alt="أليس">
-                                            <div>أليس سميث</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="q-item has-media">
-                                            <div class="q-media tall">
-                                                <img class="q-img" src="images/signs/converge-right.png"
-                                                    alt="اندماج من ناحية اليمين">
-                                            </div>
-                                            <div class="q-body">
-                                                <div><strong>السؤال:</strong> ما معنى هذه الإشارة؟</div>
-                                                <ol class="choices">
-                                                    <li>منعطف حاد لليمين</li>
-                                                    <li>منعطف لليسار</li>
-                                                    <li class="correct">اندماج من ناحية اليمين</li>
-                                                    <li>مطب</li>
-                                                </ol>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>تحت الدراسة</div>
-                                    </td>
-                                    <td>
-                                        <div>سؤال جميل</div>
-                                    </td>
-                                </tr> -->
-
-                                <!-- صف 2 (بدون صورة) -->
-                                <!-- <tr>
-                                    <td>إشارات المرور</td>
-                                    <td>
-                                        <div class="hstack">
-                                            <img src="images/default-profile.png" class="avatar-img" alt="أليس">
-                                            <div>أليس سميث</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="q-item has-media">
-                                            <div class="q-media tall">
-                                                <img class="q-img" src="images/signs/speed-bump.png" alt="مطب">
-                                            </div>
-                                            <div class="q-body">
-                                                <div><strong>السؤال:</strong> ما معنى هذه الإشارة؟</div>
-                                                <ol class="choices">
-                                                    <li>منعطف حاد لليمين</li>
-                                                    <li>منعطف لليسار</li>
-                                                    <li>اندماج من ناحية اليمين</li>
-                                                    <li class="correct">مطب</li>
-                                                </ol>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>تحت الدراسة</div>
-                                    </td>
-                                    <td>
-                                        <div>سؤال جميل</div>
-                                    </td>
-                                </tr> -->
 
                             </tbody>
                         </table>
