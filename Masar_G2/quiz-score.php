@@ -1,8 +1,9 @@
 <?php
 session_start();
-require 'connection.php';   // اتصال الـ DB
 
-/* (1) توحيد مفاتيح الجلسة */
+require 'connection.php'; 
+
+
 if (isset($_SESSION['user_id']) && !isset($_SESSION['id'])) {
   $_SESSION['id'] = (int)$_SESSION['user_id'];
 }
@@ -10,7 +11,6 @@ if (isset($_SESSION['user_type']) && !isset($_SESSION['userType'])) {
   $_SESSION['userType'] = $_SESSION['user_type'];
 }
 
-/* (2) السماح فقط للـ learner (بنفس أسلوب login.php) */
 if (!isset($_SESSION['id']) || (($_SESSION['userType'] ?? '') !== 'learner')) {
   header("Location: login.php");
   exit;
@@ -18,9 +18,7 @@ if (!isset($_SESSION['id']) || (($_SESSION['userType'] ?? '') !== 'learner')) {
 $userID = (int)$_SESSION['id'];
 
 
-/* =========================================================
-   (a) جلب بيانات الكويز (المعلم + الموضوع)
-========================================================= */
+
 $quizID = 0;
 if (isset($_POST['quizID'])) {
   $quizID = (int)$_POST['quizID'];
