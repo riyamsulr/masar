@@ -102,9 +102,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Set session variables consistently
                 $_SESSION['id'] = $new_user_id;
                 $_SESSION['user_id'] = $new_user_id;
-                $_SESSION['user_type'] = $user_type; 
+                $_SESSION['userType'] = $user_type; 
                 $_SESSION['email'] = $email;
                 $_SESSION['emailAddress'] = $email;
+
+                session_write_close();
 
                 if ($user_type == 'educator') {
                     header("Location: Educator.php");
@@ -360,7 +362,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body class="rd">
   <header class="rd">
-    <img src="images/logo.png" alt="مسار" id="logo" class="rd">
+  	<img src="images/logo.png" alt="مسار" id="logo" class="rd">
   </header>
 
   <?php 
@@ -373,34 +375,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    ?>
 
   <div class="tab-buttons rd">
-    <button class="tab-link rd" data-target="educator-signup">معلم</button>
-    <button class="tab-link rd" data-target="learner-signup">طالب</button>
+  	<button class="tab-link rd" data-target="educator-signup">معلم</button>
+  	<button class="tab-link rd" data-target="learner-signup">طالب</button>
   </div>
 
   <div id="educator-signup" class="tab-content rd">
-    <h2 class="rd">تسجيل معلم</h2>
+  	<h2 class="rd">تسجيل معلم</h2>
     
-    <form class="rd" id="educator-signup-form" method="POST" action="signup.php" enctype="multipart/form-data">
+  	<form class="rd" id="educator-signup-form" method="POST" action="signup.php" enctype="multipart/form-data">
       
       <input type="hidden" name="user_type" value="educator">
 
-      <label class="rd">الاسم الأول</label>
-      <input type="text" required class="rd" placeholder="ادخل اسمك الأول" name="first_name">
+  	  <label class="rd">الاسم الأول</label>
+  	  <input type="text" required class="rd" placeholder="ادخل اسمك الأول" name="first_name">
 
-      <label class="rd">اسم العائلة</label>
-      <input type="text" required class="rd" placeholder="ادخل اسم العائلة" name="last_name">
+  	  <label class="rd">اسم العائلة</label>
+  	  <input type="text" required class="rd" placeholder="ادخل اسم العائلة" name="last_name">
 
-      <label class="rd">صورة المستخدم</label>
-      <input type="file" accept="image/*" class="rd" name="profile_picture">
+  	  <label class="rd">صورة المستخدم</label>
+  	  <input type="file" accept="image/*" class="rd" name="profile_picture">
 
-      <label class="rd">البريد الإلكتروني</label>
-      <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني" name="email">
+  	  <label class="rd">البريد الإلكتروني</label>
+  	  <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني" name="email">
 
-      <label class="rd">كلمة المرور</label>
-      <input type="password" required class="rd" placeholder="انشئ كلمة مرور" name="password">
+  	  <label class="rd">كلمة المرور</label>
+  	  <input type="password" required class="rd" placeholder="انشئ كلمة مرور" name="password">
 
       <label class="rd">المواد التعليمية</label>
-      <div class="checkbox-group rd">
+  	  <div class="checkbox-group rd">
         <?php
         if (empty($topics)) {
             echo "<span>لا توجد مواد متاحة حاليًا.</span>";
@@ -413,38 +415,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
         ?>
-     </div>
-            <input type="submit" value="تسجيل" class="submit rd">
-    </form>
+   	 </div>
+        	  <input type="submit" value="تسجيل" class="submit rd">
+  	</form>
   </div>
 
   <div id="learner-signup" class="tab-content rd">
-    <h2 class="rd">تسجيل طالب</h2>
+  	<h2 class="rd">تسجيل طالب</h2>
     
-    <form class="rd" id="learner-signup-form" method="POST" action="signup.php" enctype="multipart/form-data">
+  	<form class="rd" id="learner-signup-form" method="POST" action="signup.php" enctype="multipart/form-data">
       
       <input type="hidden" name="user_type" value="learner">
 
       <label class="rd">الاسم الأول</label>
-      <input type="text" required class="rd" placeholder="ادخل اسمك الأول" name="first_name">
+  	  <input type="text" required class="rd" placeholder="ادخل اسمك الأول" name="first_name">
 
-      <label class="rd">اسم العائلة</label>
-      <input type="text" required class="rd" placeholder="ادخل اسم العائلة" name="last_name">
+  	  <label class="rd">اسم العائلة</label>
+  	  <input type="text" required class="rd" placeholder="ادخل اسم العائلة" name="last_name">
 
-      <label class="rd">صورة المستخدم</label>
-      <input type="file" accept="image/*" class="rd" name="profile_picture">
+  	  <label class="rd">صورة المستخدم</label>
+  	  <input type="file" accept="image/*" class="rd" name="profile_picture">
 
-      <label classs="rd">البريد الإلكتروني</label>
-      <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني" name="email">
+  	  <label classs="rd">البريد الإلكتروني</label>
+  	  <input type="email" required class="rd" placeholder="ادخل بريدك الإلكتروني" name="email">
 
-      <label class="rd">كلمة المرور</label>
-      <input type="password" required class="rd" placeholder="انشئ كلمة مرور" name="password">
+  	  <label class="rd">كلمة المرور</label>
+  	  <input type="password" required class="rd" placeholder="انشئ كلمة مرور" name="password">
 
-      <input type="submit" value="تسجيل" class="submit rd">
-    </form>
+  	  <input type="submit" value="تسجيل" class="submit rd">
+  	</form>
   </div>
   <footer>
-    &copy; 2025 جميع الحقوق محفوظة 
+  	&copy; 2025 جميع الحقوق محفوظة 
   </footer>
 </body>
 </html>
