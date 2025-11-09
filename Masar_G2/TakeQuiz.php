@@ -177,7 +177,11 @@
                                             echo "<div class=\"q-body\">";
                                             echo "<div class=\"q-title\">{$row['question']}</div>";
                                             echo "<ol class=\"choices\">";
-                                            if ($row['correctAnswer'] == 'A') {
+                                            echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"A\">{$row['answerA']}</li>";
+                                            echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"B\">{$row['answerB']}</li>";
+                                            echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"C\">{$row['answerC']}</li>";
+                                            echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"D\">{$row['answerD']}</li>";
+                                            /*if ($row['correctAnswer'] == 'A') {
                                                 echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"correct\">{$row['answerA']}</li>";
                                                 echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerB']}</li>";
                                                 echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerC']}</li>";
@@ -197,7 +201,7 @@
                                                 echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerB']}</li>";
                                                 echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"incorrect\">{$row['answerC']}</li>";
                                                 echo "<li><input type=\"radio\" name=\"q{$questionNum}-answer\" value=\"correct\">{$row['answerD']}</li>";
-                                            }
+                                            } */
                                             echo "</ol></div></div></td></tr>";
                                             $questionNum++;
                                         }
