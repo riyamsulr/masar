@@ -2,7 +2,7 @@
 session_start();
 require 'connection.php';
 
-if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'educator') {
+if (!isset($_SESSION['id']) || ($_SESSION['userType'] ?? '') !== 'educator') {
   header("Location: login.php");
   exit;
 }
@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__update_question']))
     exit;
   }
 
-  // نجيب السؤال لمعرفة quizID والصورة القديمة
-  $q_sql = "SELECT * FROM quizquestion WHERE id = $questionID";
+  // نجيب السجل الحالي علشان نعرف quizID ومسار الصورة القديمة
+  $q_sql = "SELECT id, quizID, questionFigureFileName FROM quizquestion WHERE id = $questionID";
   $q_res = mysqli_query($connection, $q_sql);
   $question = mysqli_fetch_assoc($q_res);
   if (!$question) {
@@ -23,35 +23,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__update_question']))
     exit;
   }
 
-  $qtext   = mysqli_real_escape_string($connection, $_POST['qtext']);
-  $optA    = mysqli_real_escape_string($connection, $_POST['optA']);
-  $optB    = mysqli_real_escape_string($connection, $_POST['optB']);
-  $optC    = mysqli_real_escape_string($connection, $_POST['optC']);
-  $optD    = mysqli_real_escape_string($connection, $_POST['optD']);
-  $correct = mysqli_real_escape_string($connection, $_POST['correct']);
   $quizID  = (int)$question['quizID'];
+  $oldPath = trim((string)$question['questionFigureFileName']); // ممكن يكون "images/signs/..." أو فاضي
 
-  // الصورة الجديدة (إن وُجدت)، وإلا نبقي القديمة
-  $imgNew = $question['questionFigureFileName'];
-  if (!empty($_FILES['qimg']['name']) && $_FILES['qimg']['error'] === 0) {
-    $ext = pathinfo($_FILES['qimg']['name'], PATHINFO_EXTENSION);
-    $imgNew = 'q_' . time() . '_' . rand(1000,9999) . '.' . strtolower($ext);
-    $dest = __DIR__ . '/uploads/questions/' . $imgNew;
-    if (!is_dir(dirname($dest))) { @mkdir(dirname($dest), 0777, true); }
-    move_uploaded_file($_FILES['qimg']['tmp_name'], $dest);
+  // حقول النص
+  $qtext   = mysqli_real_escape_string($connection, $_POST['qtext']);
+  $optA    = mysqli_real_escape_string($connection, $_POST['optA'] );
+  $optB    = mysqli_real_escape_string($connection, $_POST['optB']);
+  $optC    = mysqli_real_escape_string($connection, $_POST['optC'] );
+  $optD    = mysqli_real_escape_string($connection, $_POST['optD'] );
+  $correct = mysqli_real_escape_string($connection, $_POST['correct'] );
 
-    // حذف القديمة إن وجدت
-    if (!empty($question['questionFigureFileName'])) {
-      $old = __DIR__ . '/uploads/questions/' . $question['questionFigureFileName'];
-      if (is_file($old)) { @unlink($old); }
-    }
+  // مسار الرفع المطلوب
+ $uploadRelDir = 'images/signs/';
+$newDBPath = $oldPath;
+
+if (is_dir($uploadRelDir) && isset($_FILES['qimg']) && $_FILES['qimg']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['qimg']['name'], PATHINFO_EXTENSION));
+    $allowed = ['jpg','jpeg','png','gif','webp','svg'];
+    if (!in_array($ext, $allowed, true)) $ext = 'jpg';
+    
+  $unique = uniqid('sign_', true) . '.' . $ext;
+  $relTarget = $uploadRelDir . $unique; // نحفظ النسبي فقط
+
+  if (move_uploaded_file($_FILES['qimg']['tmp_name'], $relTarget)) {
+    $newDBPath = $relTarget;
+
+    // حذف القديمة
+    if (!empty($oldPath)) {
+  $oldAbs = __DIR__ . '/' . $oldPath;  // يحوّل لمسار كامل
+  if (is_file($oldAbs)) { @unlink($oldAbs); }
+}
+  }
+}
+
+
+  // حضّر قيمة عمود الصورة
+  $imgColValue = 'NULL';
+  if (!empty($newDBPath)) {
+    $imgColValue = "'" . mysqli_real_escape_string($connection, $newDBPath) . "'";
   }
 
-  $imgColValue = "NULL";
-  if (!empty($imgNew)) {
-    $imgColValue = "'" . mysqli_real_escape_string($connection, $imgNew) . "'";
-  }
-
+  // التحديث
   $up_sql = "UPDATE quizquestion
              SET question = '$qtext',
                  answerA = '$optA',
@@ -66,9 +79,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__update_question']))
     die('فشل التحديث: ' . mysqli_error($connection));
   }
 
-  header('Location: uiz.php?quizID=' . $quizID);
+  header('Location: Quiz.php?quizID=' . $quizID);
   exit;
 }
 
+// لو ما كان POST صحيح
 header('Location: Educator.php');
 exit;
