@@ -2,8 +2,8 @@
 session_start();
 require 'connection.php';
 
-if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION['user_type'] !== 'educator')) {
-  header("Location: index.php");
+if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'educator') {
+  header("Location: login.php");
   exit;
 }
 
