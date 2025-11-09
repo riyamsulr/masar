@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 09, 2025 at 02:14 PM
+-- Generation Time: Nov 09, 2025 at 02:22 PM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -195,7 +195,7 @@ CREATE TABLE `user` (
   `lastName` varchar(100) NOT NULL,
   `emailAddress` varchar(150) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `photoFileName` varchar(255) DEFAULT NULL,
+  `photoFileName` varchar(255) DEFAULT 'images/default-profile.png',
   `userType` enum('learner','educator') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
