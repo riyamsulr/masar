@@ -1,13 +1,68 @@
+<?php
+session_start();
+include 'connection.php';
+
+/* التحقق من أن المستخدم معلّم */
+if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'educator') {
+    header("Location: login.php");
+    exit();
+}
+
+$educatorID = (int)$_SESSION['id'];
+
+/* جلب بيانات المعلم */
+$userSql = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id = $educatorID";
+$userResult = mysqli_query($connection, $userSql);
+$user = mysqli_fetch_assoc($userResult);
+
+$firstName = $user['firstName'];
+$lastName  = $user['lastName'];
+$email     = $user['emailAddress'];
+$photoFile = $user['photoFileName'] != '' ? $user['photoFileName'] : 'images/default-profile.png';
+$fullName  = $firstName . ' ' . $lastName;
+
+/* التخصصات */
+$topicsSql = "SELECT DISTINCT t.topicName
+              FROM quiz q JOIN topic t ON t.id = q.topicID
+              WHERE q.educatorID = $educatorID";
+$topicsResult = mysqli_query($connection, $topicsSql);
+$topics = [];
+while ($row = mysqli_fetch_assoc($topicsResult)) {
+    $topics[] = $row['topicName'];
+}
+$specializations = !empty($topics) ? implode('، ', $topics) : "لا توجد تخصصات بعد.";
+
+/* الاختبارات */
+$quizSql = "SELECT q.id AS quizID, t.topicName,
+           (SELECT COUNT(*) FROM quizquestion qq WHERE qq.quizID = q.id) AS questionCount,
+           (SELECT COUNT(*) FROM takenquiz tq WHERE tq.quizID = q.id) AS takenCount,
+           (SELECT ROUND(AVG(tq.score),1) FROM takenquiz tq WHERE tq.quizID = q.id) AS avgScore,
+           (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id) AS feedbackCount,
+           (SELECT ROUND(AVG(qf.rating),1) FROM quizfeedback qf WHERE qf.quizID = q.id) AS avgRating,
+           (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id AND qf.comments <> '') AS commentsCount
+           FROM quiz q JOIN topic t ON t.id = q.topicID
+           WHERE q.educatorID = $educatorID ORDER BY q.id";
+$quizResult = mysqli_query($connection, $quizSql);
+
+/* توصيات الأسئلة */
+$recSql = "SELECT r.id AS recID, t.topicName, l.firstName AS learnerFirst, l.lastName AS learnerLast,
+           r.question, r.questionFigureFileName, r.answerA, r.answerB, r.answerC, r.answerD, r.correctAnswer
+           FROM recommendedquestion r
+           JOIN quiz q ON q.id = r.quizID
+           JOIN topic t ON t.id = q.topicID
+           JOIN user l ON l.id = r.learnerID
+           WHERE q.educatorID = $educatorID AND r.status = 'pending' ORDER BY r.id";
+$recResult = mysqli_query($connection, $recSql);
+?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-    <link rel="icon" href="images/logo.png">
   <title>واجهة المعلّم</title>
+  <link rel="icon" href="images/logo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="common.css">
   <style>
-    /* خاص بالمعلّم */
     .educator{
       display:grid;grid-template-columns:1fr 140px;gap:18px;align-items:start;
     }
@@ -16,8 +71,6 @@
       background:#E7DFD1;display:flex;align-items:center;justify-content:center;
     }
     .photo img{width:100%;height:100%;object-fit:cover}
-
-    /* كروت اختباراتك — منحنية وحدود أزرق */
     .quiz-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
     @media (max-width:900px){.quiz-list{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:620px){.quiz-list{grid-template-columns:1fr}}
@@ -31,12 +84,15 @@
       border-top:1px dashed #D6CEC2;padding-top:8px
     }
     .empty{color:#8A8A8B}
-
-    /* utilities */
     .hstack{display:flex;align-items:center;gap:8px}
-
-    /* محاذاة عمود السؤال مع تخطيط media */
     .table-wrap td:nth-child(3){text-align:right}
+
+    /* ✅ تظليل الجواب الصحيح */
+    .choices li.correct {
+      background-color: #E6F2F7 !important;
+      border: 1px solid #A9CFE0 !important;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
@@ -48,13 +104,13 @@
         <span>مسار لتدريب القيادة</span>
       </div>
     </div>
-  </header>
+  </header>
 
   <div class="container">
     <!-- Topbar -->
     <div class="topbar">
-      <h1>مرحبًا، <span class="muted">جون</span></h1>
-      <a class="logout-link" href="homepage.php">تسجيل الخروج</a>
+      <h1>مرحبًا، <span class="muted"><?php echo htmlspecialchars($firstName); ?></span></h1>
+      <a class="logout-link" href="login.php">تسجيل الخروج</a>
     </div>
 
     <!-- معلومات المعلّم -->
@@ -62,13 +118,12 @@
       <h2 class="section-title"><span class="accent"></span> معلومات المعلّم</h2>
       <div class="card educator">
         <div>
-          <div><strong>الاسم:</strong> جون دو</div>
-          <div><strong>البريد:</strong> john@example.com</div>
-          <div><strong>العنوان:</strong> الرياض، المملكة العربية السعودية</div>
-          <div><strong>التخصّصات:</strong> إشارات المرور، قواعد المرور، السلامة المرورية</div>
+          <div><strong>الاسم:</strong> <?php echo htmlspecialchars($fullName); ?></div>
+          <div><strong>البريد:</strong> <?php echo htmlspecialchars($email); ?></div>
+          <div><strong>التخصّصات:</strong> <?php echo htmlspecialchars($specializations); ?></div>
         </div>
         <div class="photo">
-          <img src="images/pfp1.jpg" alt="صورة المعلّم">
+          <img src="<?php echo htmlspecialchars($photoFile); ?>" alt="صورة المعلّم">
         </div>
       </div>
     </section>
@@ -77,32 +132,31 @@
     <section class="section">
       <h2 class="section-title"><span class="accent"></span> اختباراتك</h2>
       <div class="quiz-list">
-        <article class="quiz-card">
-          <h3 class="quiz-title"><a href="Quiz.php">إشارات المرور</a></h3>
-          <div class="chips"><span class="chip">4 سؤال</span><span class="chip">15 مجرّب</span></div>
-          <div>متوسط الدرجة: 80%</div>
-          <div class="feedback-row">
-            <div class="rating"><span class="star">★</span> <strong>4.5 / 5</strong></div>
-            <a href="Comment.php">عرض التعليقات</a>
-          </div>
-        </article>
-
-        <article class="quiz-card">
-          <h3 class="quiz-title"><a href="Quiz.php">قواعد المرور</a></h3>
-          <div class="chips"><span class="chip">0 سؤال</span></div>
-          <div class="empty">لم يُجرّب بعد</div>
-          <div class="feedback-row"><span class="empty">لا توجد تغذية راجعة بعد</span></div>
-        </article>
-
-        <article class="quiz-card">
-          <h3 class="quiz-title"><a href="Quiz.php">السلامة المرورية</a></h3>
-          <div class="chips"><span class="chip">12 سؤال</span><span class="chip">8 مجرّبين</span></div>
-          <div>متوسط الدرجة: 72%</div>
-          <div class="feedback-row">
-            <div class="rating"><span class="star">★</span> <strong>3.8 / 5</strong></div>
-            <a href="Comment.php">عرض التعليقات</a>
-          </div>
-        </article>
+        <?php
+        if (mysqli_num_rows($quizResult) == 0) {
+            echo '<div class="empty">لا يوجد لديك اختبارات بعد.</div>';
+        } else {
+            while ($q = mysqli_fetch_assoc($quizResult)) {
+                echo '<article class="quiz-card">';
+                echo '<h3 class="quiz-title"><a href="Quiz.php?quizID='.$q['quizID'].'">'.htmlspecialchars($q['topicName']).'</a></h3>';
+                echo '<div class="chips"><span class="chip">'.$q['questionCount'].' سؤال</span>';
+                if ($q['takenCount'] > 0) echo '<span class="chip">'.$q['takenCount'].' مجرّب</span></div>';
+                if ($q['takenCount'] > 0 && $q['avgScore'] !== null)
+                    echo '<div>متوسط الدرجة: '.$q['avgScore'].'%</div>';
+                else
+                    echo '<div class="empty">لم يُجرّب بعد</div>';
+                echo '<div class="feedback-row">';
+                if ($q['feedbackCount'] > 0 && $q['avgRating'] !== null) {
+                    echo '<div class="rating"><span class="star">★</span> <strong>'.$q['avgRating'].' / 5</strong></div>';
+                    if ($q['commentsCount'] > 0)
+                        echo '<a href="Comment.php?quizID='.$q['quizID'].'">عرض التعليقات</a>';
+                } else {
+                    echo '<span class="empty">لا توجد تغذية راجعة بعد</span>';
+                }
+                echo '</div></article>';
+            }
+        }
+        ?>
       </div>
     </section>
 
@@ -116,91 +170,55 @@
               <tr><th>الموضوع</th><th>المتعلّم</th><th>السؤال</th><th>المراجعة</th></tr>
             </thead>
             <tbody>
-              <!-- صف 1 (صورة طويلة بلا إطار) -->
-              <tr>
-                <td>إشارات المرور</td>
-                <td>
-                  <div class="hstack">
-                    <img src="images/pfp3.jpg" class="avatar-img" alt="أليس">
-                    <div>أليس سميث</div>
-                  </div>
-                </td>
-                <td>
-                  <div class="q-item has-media">
-                    <div class="q-media tall">
-                      <img class="q-img" src="images/Yield.jpg" alt="إشارة إعطاء أولوية">
-                    </div>
-                    <div class="q-body">
-                      <div><strong>السؤال:</strong> ما معنى هذه الإشارة؟</div>
-                      <ol class="choices">
-                        <li>توقّف</li>
-                        <li>طريق حرّ</li>
-                        <li class="correct">طريق ذو أولوية أمامك</li>
-                        <li>نهاية الطريق الحرّ</li>
-                      </ol>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="card review-card">
-                    <div class="comment-title">تعليق</div>
-                    <textarea class="comment-input">سؤال واضح ومرتبط بالموضوع.</textarea>
-                    <div class="approval-row">
-                      <span class="approval-title">اعتماد:</span>
-                      <div class="approval-options">
-                        <label><input type="radio" name="ap1" value="yes"><span>نعم</span></label>
-                        <label><input type="radio" name="ap1" value="no"><span>لا</span></label>
-                      </div>
-                    </div>
-                    <button class="btn primary btn-full">إرسال</button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- صف 2 (بدون صورة) -->
-              <tr>
-                <td>إشارات المرور</td>
-                <td>
-                  <div class="hstack">
-                    <img src="images/pfp2.jpg" class="avatar-img" alt="محمد">
-                    <div>محمد علي</div>
-                  </div>
-                </td>
-                <td>
-                  <div><strong>السؤال:</strong> إشارة دائرية بحافة حمراء وبداخلها «60» تعني:</div>
-                  <ol class="choices">
-                    <li>الحد الأدنى للسرعة 60 كم/س</li>
-                    <li class="correct">الحد الأقصى للسرعة 60 كم/س</li>
-                    <li>السرعة الموصى بها 60 كم/س</li>
-                    <li>نهاية جميع قيود السرعة</li>
-                  </ol>
-                </td>
-                <td>
-                  <div class="card review-card">
-                    <div class="comment-title">تعليق</div>
-                    <textarea class="comment-input" placeholder="اكتب ملاحظتك..."></textarea>
-                    <div class="approval-row">
-                      <span class="approval-title">اعتماد:</span>
-                      <div class="approval-options">
-                        <label><input type="radio" name="ap2" value="yes"><span>نعم</span></label>
-                        <label><input type="radio" name="ap2" value="no"><span>لا</span></label>
-                      </div>
-                    </div>
-                    <button class="btn primary btn-full">إرسال</button>
-                  </div>
-                </td>
-              </tr>
-
+              <?php
+              if (mysqli_num_rows($recResult) == 0) {
+                  echo "<tr><td colspan='4' class='empty'>لا توجد توصيات أسئلة جديدة.</td></tr>";
+              } else {
+                  while ($r = mysqli_fetch_assoc($recResult)) {
+                      echo "<tr>";
+                      echo "<td>".htmlspecialchars($r['topicName'])."</td>";
+                      echo "<td><div class='hstack'>".htmlspecialchars($r['learnerFirst'].' '.$r['learnerLast'])."</div></td>";
+                      echo "<td>";
+                      echo "<div><strong>السؤال:</strong> ".htmlspecialchars($r['question'])."</div>";
+                      echo "<ol class='choices'>";
+                      foreach(['A','B','C','D'] as $c){
+                          $val = htmlspecialchars($r['answer'.$c]);
+                          echo $r['correctAnswer']==$c ? "<li class='correct'>$val</li>" : "<li>$val</li>";
+                      }
+                      echo "</ol>";
+                      if(!empty($r['questionFigureFileName'])){
+                          echo "<img src='images/".htmlspecialchars($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
+                      }
+                      echo "</td>";
+                      echo "<td>
+                            <form method='post' action='processRecommendation.php'>
+                              <input type='hidden' name='recID' value='".$r['recID']."'>
+                              <div class='comment-title'>تعليق</div>
+                              <textarea name='comments' placeholder='اكتب ملاحظتك...' class='comment-input'></textarea>
+                              <div class='approval-row'>
+                                <span class='approval-title'>اعتماد:</span>
+                                <div class='approval-options'>
+                                  <label><input type='radio' name='status' value='approved' required><span>نعم</span></label>
+                                  <label><input type='radio' name='status' value='disapproved'><span>لا</span></label>
+                                </div>
+                              </div>
+                              <button type='submit' class='btn primary btn-full'>إرسال</button>
+                            </form>
+                          </td>";
+                      echo "</tr>";
+                  }
+              }
+              ?>
             </tbody>
           </table>
         </div>
       </div>
     </section>
-
   </div>
-    <footer>
+
+  <footer>
     &copy; 2025 جميع الحقوق محفوظة 
-  </footer>
+  </footer>
 
 </body>
 </html>
