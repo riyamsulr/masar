@@ -27,11 +27,7 @@ if (!$question) {
   exit;
 }
 
-/* تجهيز صورة العرض */
-$imgSrc = 'img/pedestrian.jpg';
-if (!empty($question['questionFigureFileName'])) {
-  $imgSrc = 'uploads/questions/' . $question['questionFigureFileName'];
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -68,13 +64,21 @@ if (!empty($question['questionFigureFileName'])) {
         <input type="hidden" name="questionID" value="<?php echo (int)$questionID; ?>">
 
         <label for="qtext">نص السؤال</label>
-        <textarea id="qtext" name="qtext" required><?php echo htmlspecialchars($question['question']); ?></textarea>
+        <textarea id="qtext" name="qtext" required><?php echo $question['question']; ?></textarea>
 
-        <label>الصورة الحالية</label>
-        <img class="q-image" src="<?php echo htmlspecialchars($imgSrc); ?>" alt="الصورة الحالية">
+      <label for="qimg">
+<?php if (!empty($question['questionFigureFileName'])): ?>
+  الصورة الحالية:
+  <br>
+  <img class="q-image" src="<?php echo htmlspecialchars($question['questionFigureFileName']); ?>" alt="الصورة الحالية">
+  <br><br>
+  <span>تغيير الصورة (اختياري)</span>
+<?php else: ?>
+  إضافة صورة (اختياري)
+<?php endif; ?>
+</label>
 
-        <label for="qimg">تغيير الصورة (اختياري)</label>
-        <input type="file" id="qimg" name="qimg" accept="image/*">
+<input type="file" id="qimg" name="qimg" accept="image/*">
 
         <label>الخيارات</label>
         <ul class="choices">
