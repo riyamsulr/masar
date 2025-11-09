@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `educatortopic` (
   `educator_id` int NOT NULL,
   `topic_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -42,7 +42,7 @@ CREATE TABLE `quiz` (
   `id` int NOT NULL,
   `educatorID` int NOT NULL,
   `topicID` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quiz`
@@ -65,7 +65,7 @@ CREATE TABLE `quizfeedback` (
   `rating` tinyint NOT NULL,
   `comments` text,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quizfeedback`
@@ -94,7 +94,7 @@ CREATE TABLE `quizquestion` (
   `answerC` text NOT NULL,
   `answerD` text NOT NULL,
   `correctAnswer` enum('A','B','C','D') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quizquestion`
@@ -134,7 +134,7 @@ CREATE TABLE `recommendedquestion` (
   `correctAnswer` enum('A','B','C','D') NOT NULL,
   `status` enum('pending','approved','disapproved') NOT NULL DEFAULT 'pending',
   `comments` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `recommendedquestion`
@@ -155,7 +155,7 @@ CREATE TABLE `takenquiz` (
   `id` int NOT NULL,
   `quizID` int NOT NULL,
   `score` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `takenquiz`
@@ -175,7 +175,7 @@ INSERT INTO `takenquiz` (`id`, `quizID`, `score`) VALUES
 CREATE TABLE `topic` (
   `id` int NOT NULL,
   `topicName` varchar(150) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `topic`
@@ -200,7 +200,7 @@ CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `photoFileName` varchar(255) DEFAULT 'images/default-profile.png',
   `userType` enum('learner','educator') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
