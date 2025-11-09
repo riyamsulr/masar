@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 require 'connection.php';
 
 if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION['user_type'] !== 'educator')) {
@@ -8,17 +7,14 @@ if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION[
   exit;
 }
 
-/* نقرأ معرّف السؤال من الرابط (بدون ?:) */
-$questionID = 0;
-if (isset($_GET['questionID'])) {
-  $questionID = (int)$_GET['questionID'];
-}
+/* نقرأ معرّف السؤال من الرابط */
+$questionID = isset($_GET['questionID']) ? (int)$_GET['questionID'] : 0;
 if ($questionID <= 0) {
   header("Location: Educator.php");
   exit;
 }
 
-/* جلب بيانات السؤال الحالية (المفتاح id) */
+/* جلب بيانات السؤال الحالية */
 $q_sql = "SELECT * FROM quizquestion WHERE id = $questionID";
 $q_res = mysqli_query($conn, $q_sql);
 $question = mysqli_fetch_assoc($q_res);
@@ -27,60 +23,7 @@ if (!$question) {
   exit;
 }
 
-/* عند الإرسال: تحديث السؤال */
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__update_question'])) {
-  $qtext   = mysqli_real_escape_string($conn, $_POST['qtext']);
-  $optA    = mysqli_real_escape_string($conn, $_POST['optA']);
-  $optB    = mysqli_real_escape_string($conn, $_POST['optB']);
-  $optC    = mysqli_real_escape_string($conn, $_POST['optC']);
-  $optD    = mysqli_real_escape_string($conn, $_POST['optD']);
-  $correct = mysqli_real_escape_string($conn, $_POST['correct']);
-  $quizID  = (int)$question['quizID'];
-
-  /* الصورة: الافتراضي = القديمة */
-  $imgNew = $question['questionFigureFileName'];
-
-  /* لو رفع صورة جديدة */
-  if (!empty($_FILES['qimg']['name']) && $_FILES['qimg']['error'] === 0) {
-    $ext = pathinfo($_FILES['qimg']['name'], PATHINFO_EXTENSION);
-    $imgNew = 'q_' . time() . '_' . rand(1000,9999) . '.' . strtolower($ext);
-    $dest = __DIR__ . '/uploads/questions/' . $imgNew;
-    if (!is_dir(dirname($dest))) { @mkdir(dirname($dest), 0777, true); }
-    move_uploaded_file($_FILES['qimg']['tmp_name'], $dest);
-
-    // حذف القديمة إن وجدت
-    if (!empty($question['questionFigureFileName'])) {
-      $old = __DIR__ . '/uploads/questions/' . $question['questionFigureFileName'];
-      if (is_file($old)) { @unlink($old); }
-    }
-  }
-
-  /* تجهيز قيمة عمود الصورة بدون ?: */
-  $imgColValue = "NULL";
-  if (!empty($imgNew)) {
-    $imgColValue = "'" . mysqli_real_escape_string($conn, $imgNew) . "'";
-  }
-
-  /* تحديث بالأسماء الصحيحة للأعمدة */
-  $up_sql = "UPDATE quizquestion
-             SET question = '$qtext',
-                 answerA = '$optA',
-                 answerB = '$optB',
-                 answerC = '$optC',
-                 answerD = '$optD',
-                 correctAnswer = '$correct',
-                 questionFigureFileName = $imgColValue
-             WHERE id = $questionID";
-
-  if (mysqli_query($conn, $up_sql)) {
-    header("Location: quiz.php?quizID=" . $quizID);
-    exit;
-  } else {
-    $error = "فشل التحديث: " . mysqli_error($conn);
-  }
-}
-
-/* تجهيز مسار صورة العرض الحالية بدون ?: */
+/* تجهيز صورة العرض */
 $imgSrc = 'img/pedestrian.jpg';
 if (!empty($question['questionFigureFileName'])) {
   $imgSrc = 'uploads/questions/' . $question['questionFigureFileName'];
@@ -112,14 +55,11 @@ if (!empty($question['questionFigureFileName'])) {
   <div class="container">
     <h1 class="section-title"><span class="accent"></span> تعديل السؤال</h1>
 
-    <?php if (!empty($error)): ?>
-      <div class="card" style="padding:10px;border:1px solid #e99;color:#900;margin-bottom:10px;"><?php echo $error; ?></div>
-    <?php endif; ?>
-
     <div class="form-card">
       <div class="form-header">عدّل تفاصيل السؤال</div>
 
-      <form action="" method="post" enctype="multipart/form-data">
+      <!-- لاحظي: صارت ترسل إلى edit-question-action.php -->
+      <form action="edit-question-action.php" method="post" enctype="multipart/form-data">
         <input type="hidden" name="__update_question" value="1">
         <input type="hidden" name="questionID" value="<?php echo (int)$questionID; ?>">
 
@@ -127,9 +67,7 @@ if (!empty($question['questionFigureFileName'])) {
         <textarea id="qtext" name="qtext" required><?php echo htmlspecialchars($question['question']); ?></textarea>
 
         <label>الصورة الحالية</label>
-        <img class="q-image"
-             src="<?php echo htmlspecialchars($imgSrc); ?>"
-             alt="الصورة الحالية">
+        <img class="q-image" src="<?php echo htmlspecialchars($imgSrc); ?>" alt="الصورة الحالية">
 
         <label for="qimg">تغيير الصورة (اختياري)</label>
         <input type="file" id="qimg" name="qimg" accept="image/*">
@@ -151,10 +89,7 @@ if (!empty($question['questionFigureFileName'])) {
           <?php
             $corr = $question['correctAnswer'];
             foreach (['A','B','C','D'] as $c) {
-              $sel = '';
-              if ($corr === $c) {
-                $sel = 'selected';
-              }
+              $sel = ($corr === $c) ? 'selected' : '';
               echo '<option value="'.$c.'" '.$sel.'>'.$c.'</option>';
             }
           ?>
