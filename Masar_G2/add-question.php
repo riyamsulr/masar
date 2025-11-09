@@ -1,68 +1,14 @@
 <?php
-// جلسة + حماية مدرس + اتصال
 session_start();
 require 'connection.php';
 
-// ضبط الأخطاء
-mysqli_report(MYSQLI_REPORT_OFF);
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$error = '';
-
-// تحقق الصلاحيات
 if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_type']) && $_SESSION['user_type'] !== 'educator')) {
   header("Location: index.php");
   exit;
 }
 
-// نقرأ quizID من الرابط لو موجود (يجي من صفحة إدارة كويز)
+// نقرأ quizID من الرابط
 $quizID = isset($_GET['quizID']) ? (int)$_GET['quizID'] : 0;
-
-// عند الإرسال نحفظ السؤال
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['__add_question'])) {
-  // قراءة القيم
-  $qtext   = mysqli_real_escape_string($conn, $_POST['qtext']);
-  $optA    = mysqli_real_escape_string($conn, $_POST['optA']);
-  $optB    = mysqli_real_escape_string($conn, $_POST['optB']);
-  $optC    = mysqli_real_escape_string($conn, $_POST['optC']);
-  $optD    = mysqli_real_escape_string($conn, $_POST['optD']);
-  $correct = mysqli_real_escape_string($conn, $_POST['correct']);
-  $quizID  = (int)$_POST['quizID'];
-
-  // (اختياري) تأكيد صحة correct
-  if (!in_array($correct, ['A','B','C','D'], true)) {
-    $correct = 'A';
-  }
-
-  // رفع صورة (اختياري)
-  $imageName = "";
-  if (!empty($_FILES['qimg']['name']) && $_FILES['qimg']['error'] === 0) {
-    $ext = pathinfo($_FILES['qimg']['name'], PATHINFO_EXTENSION);
-    $imageName = 'q_' . time() . '_' . rand(1000,9999) . '.' . strtolower($ext);
-    $dest = __DIR__ . '/uploads/questions/' . $imageName;
-    if (!is_dir(dirname($dest))) { @mkdir(dirname($dest), 0777, true); }
-    move_uploaded_file($_FILES['qimg']['tmp_name'], $dest);
-  }
-
-  // جهّز قيمة عمود الصورة بدون ?:
-  $imgCol = "NULL";
-  if (!empty($imageName)) {
-    $imgCol = "'" . mysqli_real_escape_string($conn, $imageName) . "'";
-  }
-
-  // إدخال في جدول الأسئلة
-$sql = "INSERT INTO quizquestion
-        (quizID, question, answerA, answerB, answerC, answerD, correctAnswer, questionFigureFileName)
-        VALUES ($quizID, '$qtext', '$optA', '$optB', '$optC', '$optD', '$correct', " . ($imageName ? "'$imageName'" : "NULL") . ")";
-
-  if (!mysqli_query($conn, $sql)) {
-    die('خطأ في الإدراج: ' . mysqli_error($conn));
-  }
-
-  header('Location: quiz.php?quizID=' . $quizID);
-  exit;
-}
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -91,14 +37,11 @@ $sql = "INSERT INTO quizquestion
   <div class="container">
     <h1 class="section-title"><span class="accent"></span> إضافة سؤال</h1>
 
-    <?php if (!empty($error)): ?>
-      <div class="card" style="padding:10px;border:1px solid #e99;color:#900;margin-bottom:10px;"><?php echo $error; ?></div>
-    <?php endif; ?>
-
     <div class="form-card">
       <div class="form-header">أضف تفاصيل السؤال</div>
 
-      <form action="" method="post" enctype="multipart/form-data">
+      <!-- لاحظي: صارت ترسل إلى add-question-action.php -->
+      <form action="add-question-action.php" method="post" enctype="multipart/form-data">
         <input type="hidden" name="__add_question" value="1">
         <input type="hidden" name="quizID" value="<?php echo (int)$quizID; ?>">
 
