@@ -4,7 +4,8 @@ require 'connection.php';
 if (!isset($_GET['q']) || empty($_GET['q'])) {
     die("رقم السؤال غير محدد.");
 }
-$questionID = intval($_GET['q']);
+
+$questionID = $_GET['q'];
 
 $queryImage = "SELECT questionFigureFileName, quizID FROM quizquestion WHERE id = $questionID";
 $resultImage = mysqli_query($connection, $queryImage);
@@ -25,5 +26,5 @@ $deleteQuery = "DELETE FROM quizquestion WHERE id = $questionID";
 mysqli_query($connection, $deleteQuery);
 
 header("Location: Quiz.php?quizID=$quizID");
-exit;
+exit();
 ?>
