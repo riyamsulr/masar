@@ -20,18 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `it329`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `educatortopic`
---
-
-CREATE TABLE `educatortopic` (
-  `educator_id` int NOT NULL,
-  `topic_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 -- --------------------------------------------------------
 
 --
