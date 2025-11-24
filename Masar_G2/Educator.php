@@ -126,7 +126,7 @@ $recResult = mysqli_query($connection, $recSql);
     <!-- Topbar -->
     <div class="topbar">
       <h1>مرحبًا، <span class="muted"><?php echo ($firstName); ?></span></h1>
-      <a class="logout-link" href="login.php">تسجيل الخروج</a>
+      <a class="logout-link" href="logout.php">تسجيل الخروج</a>
     </div>
 
     <!-- معلومات المعلّم -->

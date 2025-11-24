@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topic'])) {
                 <?php
                 echo "<h1>مرحبًا، <span class=\"muted\">{$firstName}</span></h1>";
                 ?>
-                <a class="logout-link" href="homepage.php">تسجيل الخروج</a>
+                <a class="logout-link" href="logout.php">تسجيل الخروج</a>
             </div>
 
             <!-- معلومات المعلّم -->
