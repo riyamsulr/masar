@@ -244,80 +244,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topic'])) {
             <section class="section">
                 <div class="quiz-section">
                     <h2 class="section-title"><span class="accent"></span> الاختبارات</h2>
-                    <form action="Learner.php" method="POST">
-                        <select class="filter-select" name="topic">
-                            <option value="0">جميع المواضيع</option>
-                            <?php
-                            $getTopics = "SELECT * FROM topic";
-
-                            if ($result = mysqli_query($connection, $getTopics)) {
-                                while ($row = mysqli_fetch_assoc($result)) {
-                                    echo "<option value=\"{$row['id']}\" " .
-                                    ($topicFilter == $row['id'] ? "selected" : "") .
-                                    ">{$row['topicName']}</option>";
-                                }
+                    <select id="topicFilter" class="filter-select">
+                        <option value="0">جميع المواضيع</option>
+                        <?php
+                        $getTopics = "SELECT * FROM topic";
+                        if ($result = mysqli_query($connection, $getTopics)) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<option value=\"{$row['id']}\">{$row['topicName']}</option>";
                             }
-                            ?>
-                        </select>
-                        <input type="submit" value="بحث" class="btn primary">
-                    </form>
-                </div>
-                <div class="quiz-list">
-
-                    <?php
-                    $quizList = "
-                                    SELECT 
-                                        q.id, 
-                                        q.educatorID, 
-                                        q.topicID, 
-                                        t.topicName, 
-                                        u.firstName, 
-                                        u.lastName,
-                                        u.photoFileName,
-                                        COUNT(qq.id) AS questionCount
-                                    FROM quiz q
-                                    JOIN topic t 
-                                        ON q.topicID = t.id
-                                    JOIN user u 
-                                        ON q.educatorID = u.id
-                                    LEFT JOIN quizquestion qq
-                                        ON q.id = qq.quizID
-                                ";
-
-                    // apply filter only if topic chosen
-                    if ($topicFilter != 0) {
-                        $quizList .= " WHERE q.topicID = {$topicFilter} ";
-                    }
-
-                    $quizList .= "
-                        GROUP BY 
-                            q.id,
-                            q.educatorID,
-                            q.topicID,
-                            t.topicName,
-                            u.firstName,
-                            u.lastName, 
-                            u.photoFileName
-                    ";
-
-                    if ($result = mysqli_query($connection, $quizList)) {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "<article class=\"quiz-card\">";
-                            echo "<div class=\"quiz-info\">";
-                            echo "<h3 class=\"quiz-title\"><a href=\"\">{$row['topicName']}</a></h3>";
-                            echo "<div class=\"chips\"><span class=\"chip\"><span class=\"number-of-questions\">{$row['questionCount']}</span> سؤال</div>";
-                            echo "</div>";
-                            echo "<div class=\"instructor-info\">";
-                            echo "<h4>{$row['firstName']} {$row['lastName']}</h4>";
-                            echo "<img src=\"{$row['photoFileName']}\" class=\"avatar-img\">";
-                            echo "</div>";
-                            echo "<a href=\"TakeQuiz.php?quizID={$row['id']}\"><button class=\"btn primary btn-full\">بدء الاختبار</button></a>";
-                            echo "</article>";
                         }
-                    }
-                    ?>
+                        ?>
+                    </select>
 
                 </div>
+                <div id="quizList" class="quiz-list"></div>
+
             </section>
 
             <!-- توصيات الأسئلة -->
@@ -473,6 +414,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topic'])) {
                         }
                     }
                 });
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const topicSelect = document.getElementById('topicFilter');
+                const quizList = document.getElementById('quizList');
+
+                // Load quizzes initially (topic = 0)
+                loadQuizzes(0);
+
+                topicSelect.addEventListener('change', function () {
+                    const topicID = this.value;
+                    loadQuizzes(topicID);
+                });
+
+                function loadQuizzes(topicID) {
+
+                    fetch('getQuizzesByTopic.php?topic=' + topicID)
+                            .then(response => response.json())
+                            .then(data => updateQuizList(data));
+                }
+
+                function updateQuizList(quizzes) {
+                    quizList.innerHTML = ""; // Clear old quizzes
+
+                    if (quizzes.length === 0) {
+                        quizList.innerHTML = "<p class='empty'>لا توجد اختبارات في هذا الموضوع.</p>";
+                        return;
+                    }
+
+                    quizzes.forEach(q => {
+
+                        const card = `
+                <article class="quiz-card">
+                    <div class="quiz-info">
+                        <h3 class="quiz-title">${q.topicName}</h3>
+                        <div class="chips">
+                            <span class="chip">
+                                <span class="number-of-questions">${q.questionCount}</span> سؤال
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="instructor-info">
+                        <h4>${q.firstName} ${q.lastName}</h4>
+                        <img src="${q.photoFileName}" class="avatar-img">
+                    </div>
+
+                    <a href="TakeQuiz.php?quizID=${q.id}">
+                        <button class="btn primary btn-full"
+                            ${q.questionCount == 0 ? 'disabled' : ''}>
+                            بدء الاختبار
+                        </button>
+                    </a>
+                </article>
+            `;
+
+                        quizList.innerHTML += card;
+                    });
+                }
+
             });
         </script>
     </body>
