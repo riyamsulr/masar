@@ -306,13 +306,6 @@ ALTER TABLE `user`
 --
 
 --
--- Constraints for table `educatortopic`
---
-ALTER TABLE `educatortopic`
-  ADD CONSTRAINT `educatortopic_ibfk_1` FOREIGN KEY (`educator_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `educatortopic_ibfk_2` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `quiz`
 --
 ALTER TABLE `quiz`
