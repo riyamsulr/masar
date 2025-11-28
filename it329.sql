@@ -214,13 +214,6 @@ INSERT INTO `user` (`id`, `firstName`, `lastName`, `emailAddress`, `password`, `
 --
 
 --
--- Indexes for table `educatortopic`
---
-ALTER TABLE `educatortopic`
-  ADD PRIMARY KEY (`educator_id`,`topic_id`),
-  ADD KEY `topic_id` (`topic_id`);
-
---
 -- Indexes for table `quiz`
 --
 ALTER TABLE `quiz`
