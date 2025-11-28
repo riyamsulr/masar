@@ -8,7 +8,6 @@ if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'learner') {
   exit;
 }
 
-// FETCH TOPICS: We now fetch topics first instead of quizzes
 $topics = [];
 $sql_topics = "SELECT * FROM topic ORDER BY topicName";
 $res_topics = mysqli_query($connection, $sql_topics);
@@ -110,30 +109,24 @@ while ($row = mysqli_fetch_assoc($res_topics)) {
 
   <script>
     $(document).ready(function() {
-        // Trigger when the Topic dropdown changes
         $('#topicSelect').change(function() {
-            var topicID = $(this).val();       // Get selected Topic ID
-            var educatorSelect = $('#quizID'); // Target the Educator dropdown
+            var topicID = $(this).val();      
+            var educatorSelect = $('#quizID');
 
-            // Reset Educator dropdown state
             educatorSelect.empty().append('<option value="" disabled selected>جاري التحميل...</option>');
             educatorSelect.prop('disabled', true);
 
-            // AJAX Request
             $.ajax({
-                url: 'getEducatorsByTopic.php', // PHP File
+                url: 'getEducatorsByTopic.php',
                 type: 'GET',
-                data: { topicID: topicID },     // Send Topic ID
-                dataType: 'json',               // Expect JSON response
+                data: { topicID: topicID },     
+                dataType: 'json',               
                 success: function(response) {
-                    // Clear loading message
                     educatorSelect.empty();
                     
-                    // Update List with JSON Data
                     if (response.length > 0) {
                         educatorSelect.append('<option value="" disabled selected>اختر المعلم</option>');
                         $.each(response, function(index, educator) {
-                            // Value = quizID (needed for submission), Text = Educator Name
                             educatorSelect.append('<option value="' + educator.quizID + '">' + educator.firstName + ' ' + educator.lastName + '</option>');
                         });
                         educatorSelect.prop('disabled', false);
