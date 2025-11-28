@@ -2,22 +2,18 @@
 session_start();
 require 'connection.php';
 
-// التحقق من أن المستخدم هو "متعلم"
+// Verify user is a learner
 if (!isset($_SESSION['id']) || $_SESSION['userType'] !== 'learner') {
   header("Location: login.php");
   exit;
 }
 
-// جلب قائمة الاختبارات المتاحة (الموضوع + المعلم)
-$quizzes = [];
-$sql_quizzes = "SELECT q.id AS quizID, t.topicName, u.firstName, u.lastName
-                FROM quiz q
-                JOIN topic t ON q.topicID = t.id
-                JOIN user u ON q.educatorID = u.id
-                ORDER BY t.topicName, u.firstName";
-$res_quizzes = mysqli_query($connection, $sql_quizzes);
-while ($row = mysqli_fetch_assoc($res_quizzes)) {
-    $quizzes[] = $row;
+// FETCH TOPICS: We now fetch topics first instead of quizzes
+$topics = [];
+$sql_topics = "SELECT * FROM topic ORDER BY topicName";
+$res_topics = mysqli_query($connection, $sql_topics);
+while ($row = mysqli_fetch_assoc($res_topics)) {
+    $topics[] = $row;
 }
 ?>
 <!DOCTYPE html>
@@ -28,6 +24,9 @@ while ($row = mysqli_fetch_assoc($res_quizzes)) {
   <link rel="icon" href="images/logo.png">
   <title>اقتراح سؤال</title>
   <link rel="stylesheet" href="common.css">
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <style>
     .choices li::before { content: none !important; }
     .form-card { background: #fff; border: 1px solid #D6CEC2; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); overflow: hidden; }
@@ -63,19 +62,19 @@ while ($row = mysqli_fetch_assoc($res_quizzes)) {
       <form action="recommend-question-action.php" method="post" enctype="multipart/form-data">
         <input type="hidden" name="__recommend_question" value="1">
 
-        <label for="quizID">الاختبار (الموضوع والمعلم)</label>
-        <select id="quizID" name="quizID" required>
-		  <option value="" disabled selected>اختر الاختبار الذي تقترح له</option>
-          <?php
-            if (empty($quizzes)) {
-                echo '<option value="" disabled>لا توجد اختبارات متاحة حالياً</option>';
-            } else {
-                foreach ($quizzes as $quiz) {
-                    $displayName = htmlspecialchars($quiz['topicName'] . ' - ' . $quiz['firstName'] . ' ' . $quiz['lastName']);
-                    echo '<option value="' . (int)$quiz['quizID'] . '">' . $displayName . '</option>';
-                }
+        <label for="topicSelect">الموضوع</label>
+        <select id="topicSelect" name="topicID" required>
+            <option value="" disabled selected>اختر الموضوع</option>
+            <?php
+            foreach ($topics as $topic) {
+                echo '<option value="' . $topic['id'] . '">' . htmlspecialchars($topic['topicName']) . '</option>';
             }
-          ?>
+            ?>
+        </select>
+
+        <label for="quizID">المعلم (الاختبار)</label>
+        <select id="quizID" name="quizID" required disabled>
+            <option value="" disabled selected>يرجى اختيار الموضوع أولاً</option>
         </select>
 
         <label for="qtext">نص السؤال</label>
@@ -83,7 +82,6 @@ while ($row = mysqli_fetch_assoc($res_quizzes)) {
 
         <label for="qimg">إضافة صورة (اختياري)</label>
         <input type="file" id="qimg" name="qimg" accept="image/*">
-
 
         <label>الخيارات</label>
         <ul class="choices">
@@ -109,5 +107,46 @@ while ($row = mysqli_fetch_assoc($res_quizzes)) {
    <footer>
     &copy; 2025 جميع الحقوق محفوظة 
   </footer>
+
+  <script>
+    $(document).ready(function() {
+        // Trigger when the Topic dropdown changes
+        $('#topicSelect').change(function() {
+            var topicID = $(this).val();       // Get selected Topic ID
+            var educatorSelect = $('#quizID'); // Target the Educator dropdown
+
+            // Reset Educator dropdown state
+            educatorSelect.empty().append('<option value="" disabled selected>جاري التحميل...</option>');
+            educatorSelect.prop('disabled', true);
+
+            // AJAX Request
+            $.ajax({
+                url: 'getEducatorsByTopic.php', // PHP File
+                type: 'GET',
+                data: { topicID: topicID },     // Send Topic ID
+                dataType: 'json',               // Expect JSON response
+                success: function(response) {
+                    // Clear loading message
+                    educatorSelect.empty();
+                    
+                    // Update List with JSON Data
+                    if (response.length > 0) {
+                        educatorSelect.append('<option value="" disabled selected>اختر المعلم</option>');
+                        $.each(response, function(index, educator) {
+                            // Value = quizID (needed for submission), Text = Educator Name
+                            educatorSelect.append('<option value="' + educator.quizID + '">' + educator.firstName + ' ' + educator.lastName + '</option>');
+                        });
+                        educatorSelect.prop('disabled', false);
+                    } else {
+                        educatorSelect.append('<option value="" disabled selected>لا يوجد معلمون لهذا الموضوع</option>');
+                    }
+                },
+                error: function() {
+                    educatorSelect.empty().append('<option value="" disabled selected>حدث خطأ في التحميل</option>');
+                }
+            });
+        });
+    });
+  </script>
 </body>
 </html>
