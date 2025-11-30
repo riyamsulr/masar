@@ -111,7 +111,7 @@ mysqli_query($connection, "INSERT INTO takenquiz (quizID, score) VALUES ($quizID
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نتيجة الاختبار</title>
-  <link rel="icon" href="images/logo.jpg">
+  <link rel="icon" href="images/logo.png">
   <link rel="stylesheet" href="common.css">
   <style>
     body{font-family:sans-serif;background:#f7f7f7;margin:0}
@@ -146,7 +146,7 @@ mysqli_query($connection, "INSERT INTO takenquiz (quizID, score) VALUES ($quizID
 <header>
   <div class="header-container">
     <div class="logo">
-      <img src="images/logo.jpg" alt="شعار الموقع">
+      <img src="images/logo.png" alt="شعار الموقع">
       <span>مسار لتدريب القيادة </span>
     </div>
     <a href="Learner.php" class="back-link">العودة إلى الصفحة الرئيسية</a>
