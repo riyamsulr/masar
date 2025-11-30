@@ -1,6 +1,6 @@
 <?php
 
-$connection = mysqli_connect("localhost","root","root","it329",8889);
+$connection = mysqli_connect("sql100.infinityfree.com","if0_40560213_it329","masar12345678","it329",3306);
 
 $error = mysqli_connect_error();
 
