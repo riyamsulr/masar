@@ -111,7 +111,7 @@ mysqli_query($connection, "INSERT INTO takenquiz (quizID, score) VALUES ($quizID
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نتيجة الاختبار</title>
-  <link rel="icon" href="logo.jpg">
+  <link rel="icon" href="images/logo.jpg">
   <link rel="stylesheet" href="common.css">
   <style>
     body{font-family:sans-serif;background:#f7f7f7;margin:0}
