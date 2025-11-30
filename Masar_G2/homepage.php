@@ -233,9 +233,9 @@
   </style>
 </head>
 <body class="rd">
-  <header class="rd">
-    <img src="images/logo.png" alt="مسار" id="logo" class="rd">
-  </header>
+<header class="rd">
+	<a href="https://masarksu.infinityfreeapp.com/"><img src="images/logo.png" alt="مسار" id="logo" class="rd"></a>
+</header>
   <div class="auth-container rd">
     <a href="login.php" class="rd">تسجيل دخول</a>
     <a href="signup.php" class="rd">مستخدم جديد؟ إنشاء حساب</a>
