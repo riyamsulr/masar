@@ -1,6 +1,6 @@
 <?php
 session_start();
-    include 'connection.php';
+include 'connection.php';
 
 if (!isset($_SESSION['id'])) {
     header("Location: homepage.php");
@@ -12,30 +12,33 @@ if ($_SESSION['userType'] !== 'educator') {
     exit();
 }
 
+$educatorID = $_SESSION['id'];
+$firstName = '';
+$lastName  = '';
+$photoFile = '';
+$email     = '';
 
-    $educatorID = $_SESSION['id'];
-    $firstName = '';
-    $lastName = '';
-    $photoFile = '';
-    $email = '';
+// معلومات المعلّم
+$getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName 
+                FROM user 
+                WHERE id = $educatorID";
 
-    $getUserInfo = "SELECT firstName, lastName, emailAddress, photoFileName FROM user WHERE id= $educatorID";
-
-    if ($result = mysqli_query($connection, $getUserInfo)) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $firstName = $row['firstName'];
-            $lastName = $row['lastName'];
-            $photoFile = $row['photoFileName'];
-            $email = $row['emailAddress'];
-        }
+if ($result = mysqli_query($connection, $getUserInfo)) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $firstName = $row['firstName'];
+        $lastName  = $row['lastName'];
+        $photoFile = $row['photoFileName'];
+        $email     = $row['emailAddress'];
     }
+}
 
-    $fullName = $firstName . " " . $lastName;
+$fullName = $firstName . " " . $lastName;
 
-
-
-/* التخصصات */
-$topicsSql = "SELECT DISTINCT t.topicName FROM quiz q JOIN topic t ON t.id = q.topicID WHERE q.educatorID = $educatorID";
+/* التخصّصات */
+$topicsSql = "SELECT DISTINCT t.topicName 
+              FROM quiz q 
+              JOIN topic t ON t.id = q.topicID 
+              WHERE q.educatorID = $educatorID";
 $topicsResult = mysqli_query($connection, $topicsSql);
 $specializations = "";
 $first = true;
@@ -47,7 +50,6 @@ while ($row = mysqli_fetch_assoc($topicsResult)) {
     $first = false;
 }
 
-
 /* الاختبارات */
 $quizSql = "SELECT q.id AS quizID, t.topicName,
            (SELECT COUNT(*) FROM quizquestion qq WHERE qq.quizID = q.id) AS questionCount,
@@ -56,18 +58,31 @@ $quizSql = "SELECT q.id AS quizID, t.topicName,
            (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id) AS feedbackCount,
            (SELECT ROUND(AVG(qf.rating),1) FROM quizfeedback qf WHERE qf.quizID = q.id) AS avgRating,
            (SELECT COUNT(*) FROM quizfeedback qf WHERE qf.quizID = q.id AND qf.comments != '') AS commentsCount
-           FROM quiz q JOIN topic t ON t.id = q.topicID
-           WHERE q.educatorID = $educatorID ORDER BY q.id";
+           FROM quiz q 
+           JOIN topic t ON t.id = q.topicID
+           WHERE q.educatorID = $educatorID 
+           ORDER BY q.id";
 $quizResult = mysqli_query($connection, $quizSql);
 
-/* توصيات الأسئلة */
-$recSql = "SELECT r.id AS recID, t.topicName, l.firstName AS learnerFirst, l.lastName AS learnerLast,
-           r.question, r.questionFigureFileName, r.answerA, r.answerB, r.answerC, r.answerD, r.correctAnswer
+/* توصيات الأسئلة (pending فقط) */
+$recSql = "SELECT r.id AS recID, 
+                  t.topicName, 
+                  l.firstName AS learnerFirst, 
+                  l.lastName  AS learnerLast,
+                  r.question, 
+                  r.questionFigureFileName, 
+                  r.answerA, 
+                  r.answerB, 
+                  r.answerC, 
+                  r.answerD, 
+                  r.correctAnswer
            FROM recommendedquestion r
-           JOIN quiz q ON q.id = r.quizID
+           JOIN quiz  q ON q.id = r.quizID
            JOIN topic t ON t.id = q.topicID
-           JOIN user l ON l.id = r.learnerID
-           WHERE q.educatorID = $educatorID AND r.status = 'pending' ORDER BY r.id";
+           JOIN user  l ON l.id = r.learnerID
+           WHERE q.educatorID = $educatorID 
+             AND r.status = 'pending' 
+           ORDER BY r.id";
 $recResult = mysqli_query($connection, $recSql);
 ?>
 <!DOCTYPE html>
@@ -103,7 +118,7 @@ $recResult = mysqli_query($connection, $recSql);
     .hstack{display:flex;align-items:center;gap:8px}
     .table-wrap td:nth-child(3){text-align:right}
 
-    /* ✅ تظليل الجواب الصحيح */
+    /* تظليل الجواب الصحيح */
     .choices li.correct {
       background-color: #E6F2F7 !important;
       border: 1px solid #A9CFE0 !important;
@@ -125,7 +140,7 @@ $recResult = mysqli_query($connection, $recSql);
   <div class="container">
     <!-- Topbar -->
     <div class="topbar">
-      <h1>مرحبًا، <span class="muted"><?php echo ($firstName); ?></span></h1>
+      <h1>مرحبًا، <span class="muted"><?php echo htmlspecialchars($firstName); ?></span></h1>
       <a class="logout-link" href="logout.php">تسجيل الخروج</a>
     </div>
 
@@ -134,12 +149,12 @@ $recResult = mysqli_query($connection, $recSql);
       <h2 class="section-title"><span class="accent"></span> معلومات المعلّم</h2>
       <div class="card educator">
         <div>
-          <div><strong>الاسم:</strong> <?php echo ($fullName); ?></div>
-          <div><strong>البريد:</strong> <?php echo ($email); ?></div>
-          <div><strong>التخصّصات:</strong> <?php echo ($specializations); ?></div>
+          <div><strong>الاسم:</strong> <?php echo htmlspecialchars($fullName); ?></div>
+          <div><strong>البريد:</strong> <?php echo htmlspecialchars($email); ?></div>
+          <div><strong>التخصّصات:</strong> <?php echo htmlspecialchars($specializations); ?></div>
         </div>
         <div class="photo">
-          <img src="<?php echo ($photoFile); ?>" alt="صورة المعلّم">
+          <img src="<?php echo htmlspecialchars($photoFile); ?>" alt="صورة المعلّم">
         </div>
       </div>
     </section>
@@ -154,18 +169,23 @@ $recResult = mysqli_query($connection, $recSql);
         } else {
             while ($q = mysqli_fetch_assoc($quizResult)) {
                 echo '<article class="quiz-card">';
-                echo '<h3 class="quiz-title"><a href="Quiz.php?quizID='.$q['quizID'].'">'.($q['topicName']).'</a></h3>';
-                echo '<div class="chips"><span class="chip">'.$q['questionCount'].' سؤال</span>';
-                if ($q['takenCount'] > 0) echo '<span class="chip">'.$q['takenCount'].' مجرّب</span></div>';
-                if ($q['takenCount'] > 0 && $q['avgScore'] !== null)
-                    echo '<div>متوسط الدرجة: '.$q['avgScore'].'%</div>';
-                else
+                echo '<h3 class="quiz-title"><a href="Quiz.php?quizID='.$q['quizID'].'">'.htmlspecialchars($q['topicName']).'</a></h3>';
+                echo '<div class="chips"><span class="chip">'.intval($q['questionCount']).' سؤال</span>';
+                if ($q['takenCount'] > 0) {
+                    echo '<span class="chip">'.intval($q['takenCount']).' مجرّب</span>';
+                }
+                echo '</div>';
+                if ($q['takenCount'] > 0 && $q['avgScore'] !== null) {
+                    echo '<div>متوسط الدرجة: '.htmlspecialchars($q['avgScore']).'%</div>';
+                } else {
                     echo '<div class="empty">لم يُجرّب بعد</div>';
+                }
                 echo '<div class="feedback-row">';
                 if ($q['feedbackCount'] > 0 && $q['avgRating'] !== null) {
-                    echo '<div class="rating"><span class="star">★</span> <strong>'.$q['avgRating'].' / 5</strong></div>';
-                    if ($q['commentsCount'] > 0)
+                    echo '<div class="rating"><span class="star">★</span> <strong>'.htmlspecialchars($q['avgRating']).' / 5</strong></div>';
+                    if ($q['commentsCount'] > 0) {
                         echo '<a href="Comment.php?quizID='.$q['quizID'].'">عرض التعليقات</a>';
+                    }
                 } else {
                     echo '<span class="empty">لا توجد تغذية راجعة بعد</span>';
                 }
@@ -183,7 +203,12 @@ $recResult = mysqli_query($connection, $recSql);
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>الموضوع</th><th>المتعلّم</th><th>السؤال</th><th>المراجعة</th></tr>
+              <tr>
+                <th>الموضوع</th>
+                <th>المتعلّم</th>
+                <th>السؤال</th>
+                <th>المراجعة</th>
+              </tr>
             </thead>
             <tbody>
               <?php
@@ -191,36 +216,46 @@ $recResult = mysqli_query($connection, $recSql);
                   echo "<tr><td colspan='4' class='empty'>لا توجد توصيات أسئلة جديدة.</td></tr>";
               } else {
                   while ($r = mysqli_fetch_assoc($recResult)) {
-                      echo "<tr>";
-                      echo "<td>".($r['topicName'])."</td>";
-                      echo "<td><div class='hstack'>".($r['learnerFirst'].' '.$r['learnerLast'])."</div></td>";
+                      echo "<tr id='recRow_".$r['recID']."'>";
+                      echo "<td>".htmlspecialchars($r['topicName'])."</td>";
+                      echo "<td><div class='hstack'>".htmlspecialchars($r['learnerFirst'].' '.$r['learnerLast'])."</div></td>";
                       echo "<td>";
-                      echo "<div><strong>السؤال:</strong> ".($r['question'])."</div>";
+                      echo "<div><strong>السؤال:</strong> ".htmlspecialchars($r['question'])."</div>";
                       echo "<ol class='choices'>";
-                      foreach(['A','B','C','D'] as $c){
-                          $val = ($r['answer'.$c]);
-                          echo $r['correctAnswer']==$c ? "<li class='correct'>$val</li>" : "<li>$val</li>";
+                      foreach (['A','B','C','D'] as $c) {
+                          $val = $r['answer'.$c];
+                          if ($r['correctAnswer'] == $c) {
+                              echo "<li class='correct'>".htmlspecialchars($val)."</li>";
+                          } else {
+                              echo "<li>".htmlspecialchars($val)."</li>";
+                          }
                       }
                       echo "</ol>";
-                      if(!empty($r['questionFigureFileName'])){
-                          echo "<img src='".($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
+                      if (!empty($r['questionFigureFileName'])) {
+                          echo "<img src='".htmlspecialchars($r['questionFigureFileName'])."' width='120' style='border-radius:8px;margin-top:6px;'>";
                       }
                       echo "</td>";
                       echo "<td>
-                            <form method='post' action='processRecommendation.php'>
-                              <input type='hidden' name='recID' value='".$r['recID']."'>
-                              <div class='comment-title'>تعليق</div>
-                              <textarea name='comments' placeholder='اكتب ملاحظتك...' class='comment-input'></textarea>
-                              <div class='approval-row'>
-                                <span class='approval-title'>اعتماد:</span>
-                                <div class='approval-options'>
-                                  <label><input type='radio' name='status' value='approved' required><span>نعم</span></label>
-                                  <label><input type='radio' name='status' value='disapproved'><span>لا</span></label>
+                              <form class='recForm' method='post' action='processRecommendation.php'>
+                                <input type='hidden' name='recID' value='".$r['recID']."'>
+                                <div class='comment-title'>تعليق</div>
+                                <textarea name='comments' placeholder='اكتب ملاحظتك...' class='comment-input'></textarea>
+                                <div class='approval-row'>
+                                  <span class='approval-title'>اعتماد:</span>
+                                  <div class='approval-options'>
+                                    <label>
+                                      <input type='radio' name='status' value='approved' required>
+                                      <span>نعم</span>
+                                    </label>
+                                    <label>
+                                      <input type='radio' name='status' value='disapproved'>
+                                      <span>لا</span>
+                                    </label>
+                                  </div>
                                 </div>
-                              </div>
-                              <button type='submit' class='btn primary btn-full'>إرسال</button>
-                            </form>
-                          </td>";
+                                <button type='submit' class='btn primary btn-full'>إرسال</button>
+                              </form>
+                            </td>";
                       echo "</tr>";
                   }
               }
@@ -235,6 +270,52 @@ $recResult = mysqli_query($connection, $recSql);
   <footer>
     &copy; 2025 جميع الحقوق محفوظة 
   </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+
+    $(".recForm").on("submit", function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var row  = form.closest("tr");
+
+        $.ajax({
+            type: "POST",
+            url: form.attr("action"),
+            data: form.serialize(),
+
+            success: function (response) 
+
+                if (response.trim() === "true") {
+
+                    row.fadeOut(200, function () {
+                        row.remove();
+
+                        var tbody = $("table tbody");
+
+                        if (tbody.find("tr").length === 0) {
+                            tbody.html(
+                                "<tr><td colspan='4' class='empty'>لا توجد توصيات أسئلة جديدة.</td></tr>"
+                            );
+                        }
+                    });
+
+                } else {
+                    alert("حدث خطأ أثناء تنفيذ العملية.");
+                }
+            },
+
+            error: function () {
+                alert("تعذّر الاتصال بالخادم.");
+            }
+        });
+    });
+
+});
+</script>
+
 
 </body>
 </html>

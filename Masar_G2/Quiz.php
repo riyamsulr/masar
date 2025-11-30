@@ -39,6 +39,9 @@ $total = mysqli_num_rows($result);
     .choices{margin-top:6px;list-style-type:upper-alpha}
     .correct{color:green;font-weight:bold}
   </style>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 
 <body>
@@ -86,7 +89,7 @@ $total = mysqli_num_rows($result);
 
             $i = 1;
             while ($row = mysqli_fetch_assoc($result)) {
-                echo "<tr>";
+                echo "<tr id='question-row-" . $row['id'] . "'>";
                 echo "<td>" . $i++ . "</td>";
                 echo "<td>";
                 if (!empty($row['questionFigureFileName'])) {
@@ -102,7 +105,7 @@ $total = mysqli_num_rows($result);
                 echo "</td>";
                 echo "<td>
                         <a href='edit-question.php?q=" . $row['id'] . "' class='hl-link'>تعديل</a> |
-                        <a href='delete-question.php?q=" . $row['id'] . "' class='hl-link'>حذف</a>
+                        <a href='javascript:void(0);' class='hl-link delete-btn' data-id='" . $row['id'] . "'>حذف</a>
                       </td>";
                 echo "</tr>";
             }
@@ -117,5 +120,39 @@ $total = mysqli_num_rows($result);
 <footer>
   &copy; 2025 جميع الحقوق محفوظة 
 </footer>
+    
+    <script>
+$(document).ready(function() {
+    // عند الضغط على أي زر يملك الكلاس delete-btn
+    $('.delete-btn').click(function(e) {
+        e.preventDefault(); 
+
+        if(!confirm("هل أنت متأكد من رغبتك في حذف هذا السؤال؟")) return;
+
+        var questionId = $(this).data('id'); 
+        var rowElement = $('#question-row-' + questionId); 
+
+        $.ajax({
+            url: 'delete-question.php',
+            type: 'GET',
+            data: { q: questionId },
+            success: function(response) {
+               
+                if (response.trim() === "true") {
+                    rowElement.fadeOut(300, function() { 
+                        $(this).remove(); 
+                    });
+                } else {
+                    alert("حدث خطأ أثناء محاولة حذف السؤال.");
+                }
+            },
+            error: function() {
+                alert("فشل الاتصال بالخادم.");
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>
