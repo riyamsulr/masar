@@ -4,17 +4,21 @@ https://masarksu.infinityfreeapp.com/
 
 Educator accounts:
 
+جون دو
 email: admin@quiz.com
 password: 123456
 
+أحمد ابراهيم
 email: educator2@quiz.com
 password: 123456
 
 
 Learner accounts:
 
+اليس سميث
 email: learner@quiz.com
 password: 123456
 
+سارة المعلّمة
 email: aliece@gmail.com
 password: 123456
