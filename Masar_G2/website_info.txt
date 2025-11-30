@@ -1,0 +1,20 @@
+Website URL:
+https://masarksu.infinityfreeapp.com/
+
+
+Educator accounts:
+
+email: admin@quiz.com
+password: 123456
+
+email: educator2@quiz.com
+password: 123456
+
+
+Learner accounts:
+
+email: learner@quiz.com
+password: 123456
+
+email: aliece@gmail.com
+password: 123456
